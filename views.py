@@ -3,10 +3,12 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
 from django.urls import reverse
+from django.views.generic.list import ListView
 
 from . import pairsubs
 from .forms import SubSearchForm
-from .models import create_subs, SubPair
+from .models import SubPair
+from .models import get_subtitles, create_subs
 
 def index(request):
     return HttpResponse("Hello, world! You are at the Pairsubs index!")
@@ -49,7 +51,12 @@ def subpair_info(request, id):
     return HttpResponse(elements)
 
 def subpair_show(request, id):
-    return HttpResponse(id)
+    offset = int(request.GET['offset'])
+    length = int(request.GET['length'])
+    subtitles = get_subtitles(id, offset, length)
+    #import ipdb; ipdb.set_trace()
+
+    return render(request, 'pairsubs/show.html', {'subtitles': subtitles})
 
 
 def download_sub(imdb, lang1, lang2):
@@ -57,4 +64,12 @@ def download_sub(imdb, lang1, lang2):
     return pair
 
 
+class SubPairListView(ListView):
 
+    model = SubPair
+    paginate_by = 100  # if pagination is desired
+    ordering = ['first_sub__movie_name']
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context

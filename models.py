@@ -39,20 +39,38 @@ def create_subs(pair):
         for e in s.sub:
             SubElement.objects.create(
                 num = e.index,
-                start = e.start.seconds * 1000 + e.start.microseconds,
-                end = e.end.seconds * 1000 + e.end.microseconds,
+                start = int((e.start.seconds * 1000000 + e.start.microseconds)/1000),
+                end = int((e.end.seconds * 1000000 + e.end.microseconds)/1000),
                 text = e.content,
                 subtitles = s_i
                 )
+
+
+    first_end = subs[0].subelement_set.order_by('num').last().start
+    second_end = subs[1].subelement_set.order_by('num').last().start
 
     sp = SubPair.objects.create(
             first_sub = subs[0],
             second_sub = subs[1],
             first_start = 0,
-            first_end = 0,
+            first_end = first_end,
             second_start = 0,
-            second_end = 0
+            second_end = second_end
             )
 
     return sp
+
+def get_subtitles(id, offset, length):
+    subs_pair = SubPair.objects.get(pk=id)
+    subs = []
+    #import ipdb; ipdb.set_trace()
+    for sub in subs_pair.first_sub, subs_pair.second_sub:
+        elements = sub.subelement_set.filter(start__lte=(offset+length),
+                                              end__gte=offset).order_by('num')
+        subs.append([e.text for e in elements])
+
+    sub_info = {'name':'Name'}
+    return {'sub_info': sub_info, 'subs': subs}
+
+
 

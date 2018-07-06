@@ -25,8 +25,8 @@ def generate_sub(name):
     for i in range(sub_count):
         s = srt.Subtitle(
             i+1,
-            timedelta(seconds=i*10),
-            timedelta(seconds=i*10+5),
+            timedelta(seconds=i*10, milliseconds=100),
+            timedelta(seconds=i*10+5, milliseconds=800),
             'Subtitle #{}'.format(i)
             )
         sub.append(s)
@@ -50,6 +50,11 @@ class SubTestCase(TestCase):
         pair = mock_pair_sub('to_be_found', 'rus', 'eng')
         sub_pair = models.create_subs(pair)
         self.assertIsInstance(sub_pair, models.SubPair)
+        self.assertEqual(sub_pair.first_start, 0)
+        self.assertEqual(sub_pair.first_end, 90100)
+        self.assertEqual(sub_pair.second_start, 0)
+        self.assertEqual(sub_pair.second_end, 90100)
+
 
 
 class ViewsTestCase(TestCase):
@@ -95,5 +100,26 @@ class ViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['not_found'], True)
 
+    def test_subpair_show(self):
+        pair = mock_pair_sub('to_be_found', 'rus', 'eng')
+        sub_pair = models.create_subs(pair)
+
+        response = self.client.get(reverse('pairsubs:subpair_show', args=(sub_pair.id,)),
+                        {'offset':11000, 'length':30000})
+        self.assertEqual(200, response.status_code)
+        #import ipdb; ipdb.set_trace()
+
+        self.assertEqual(len(response.context['subtitles']['subs'][0]), 4)
+        self.assertEqual(len(response.context['subtitles']['subs'][1]), 4)
+
+    def test_subpair_list(self):
+        pair = mock_pair_sub('to_be_found', 'rus', 'eng')
+        sub_pair = models.create_subs(pair)
+
+        response = self.client.get(reverse('pairsubs:subpair-list'))
+        self.assertEqual(200, response.status_code)
+        #import ipdb; ipdb.set_trace()
+
+        self.assertEqual(response.context['object_list'][0].first_sub.movie_name, 'Name_one')
 
 

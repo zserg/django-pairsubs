@@ -25,7 +25,7 @@ class SubPair(models.Model):
 
 def create_subs(pair):
     subs = []
-    import ipdb; ipdb.set_trace()
+    #import ipdb; ipdb.set_trace()
     for s in pair.subs:
         s_i = Subs.objects.create(
             movie_name = s.sub_info['MovieName'],

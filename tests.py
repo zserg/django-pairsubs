@@ -34,19 +34,22 @@ def generate_sub(name):
 
     return pairsubs.Subs(sub_s.encode('utf-8'), sub_info)
 
-def mock_pair_sub(*args):
-    subs = [generate_sub('one'),
-            generate_sub('two')
-            ]
-    return pairsubs.SubPair(subs)
+def mock_pair_sub(imdb, lang1, lang2):
+    if imdb == 'to_be_found':
+        subs = [generate_sub('one'),
+                generate_sub('two')
+                ]
+        return pairsubs.SubPair(subs)
+    else:
+        return None
+
 
 class SubTestCase(TestCase):
 
     def test_create_models(self):
-        pair = mock_pair_sub()
+        pair = mock_pair_sub('to_be_found', 'rus', 'eng')
         sub_pair = models.create_subs(pair)
         self.assertIsInstance(sub_pair, models.SubPair)
-
 
 
 class ViewsTestCase(TestCase):
@@ -59,7 +62,6 @@ class ViewsTestCase(TestCase):
         response = self.client.get(reverse('pairsubs:opensubtitles_search'))
         self.assertEqual(200, response.status_code)
 
-        #
         #import ipdb; ipdb.set_trace()
         soup = BeautifulSoup(response.content, 'html.parser')
         search_form = soup.find('form', {
@@ -77,8 +79,21 @@ class ViewsTestCase(TestCase):
         self.assertIsNotNone(lang2_input)
 
         url = reverse('pairsubs:opensubtitles_search')
-        response = self.client.post(url, {'imdb':1234, 'lang1':'rus', 'lang2':'eng'})
-        self.assertEqual(302, response.status_code)
+        response = self.client.post(url, {'imdb':'to_be_found', 'lang1':'rus', 'lang2':'eng'})
+        p = models.SubPair.objects.get()
+        self.assertRedirects(response, reverse('pairsubs:subpair_info', args=(p.pk,)),
+                status_code=302, target_status_code=200)
+
+
+    @patch.object(pairsubs.SubPair, 'download', mock_pair_sub)
+    def test_search_form_not_found(self):
+        response = self.client.get(reverse('pairsubs:opensubtitles_search'))
+        self.assertEqual(200, response.status_code)
+
+        url = reverse('pairsubs:opensubtitles_search')
+        response = self.client.post(url, {'imdb':'not_to_be_found', 'lang1':'rus', 'lang2':'eng'})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['not_found'], True)
 
 
 

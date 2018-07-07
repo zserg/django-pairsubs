@@ -15,29 +15,38 @@ def index(request):
 
 @require_http_methods(["GET", "POST"])
 def opensubtitles_search(request):
-    subtitles_not_found = False
+    #import ipdb; ipdb.set_trace()
+    status = {
+            'not_found': False,
+            'already_exists': False
+            }
 
     if request.method == 'POST':
         #import ipdb; ipdb.set_trace()
-        found = True
         form = SubSearchForm(request.POST)
         if form.is_valid():
             imdb = form.cleaned_data['imdb']
             lang1 = form.cleaned_data['lang1']
             lang2 = form.cleaned_data['lang2']
-            pair = download_sub(imdb, lang1, lang2)
-            if pair:
-                sub_pair = create_subs(pair)
-                #import ipdb; ipdb.set_trace()
-                return HttpResponseRedirect(reverse('pairsubs:subpair_info', args=(sub_pair.id,)))
+            sp = SubPair.objects.filter(id_movie_imdb = imdb,
+                                     first_lang = lang1,
+                                     second_lang = lang2)
+            if not sp: # check if already exists
+                pair = download_sub(imdb, lang1, lang2)
+                if pair:
+                    sub_pair = create_subs(pair)
+                    #import ipdb; ipdb.set_trace()
+                    return HttpResponseRedirect(reverse('pairsubs:subpair_info', args=(sub_pair.id,)))
+                else:
+                    status['not_found'] = True
             else:
-                subtitles_not_found = True
+                status['already_exists'] = True
 
     else: # GET
         form = SubSearchForm()
 
-    return render(request, "pairsubs/search.html", {'form': form,
-                                                    'not_found': subtitles_not_found})
+    status.update({'form': form})
+    return render(request, "pairsubs/search.html", status)
 
 
 def opensubtitles_download(request):

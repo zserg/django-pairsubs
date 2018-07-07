@@ -8,17 +8,16 @@ import srt
 from datetime import timedelta
 
 from pairsubs import pairsubs
-
 from pairsubs import models
 
-def generate_sub(name):
+def generate_sub(imdb, lang):
     sub_count = 10
     sub_info = {
-        'MovieName':'Name_{}'.format(name),
+        'MovieName':'Name_{}'.format(imdb),
         'SubEncoding':'utf-8',
-        'SubFileName':'File_{}'.format(name),
-        'SubLanguageID': 'en{}'.format(name[0]),
-        'IDMovieImdb': '1234',
+        'SubFileName':'File_{}'.format(imdb),
+        'SubLanguageID': lang,
+        'IDMovieImdb': imdb,
         'IDSubtitleFile': 10
     }
     sub = []
@@ -35,25 +34,28 @@ def generate_sub(name):
     return pairsubs.Subs(sub_s.encode('utf-8'), sub_info)
 
 def mock_pair_sub(imdb, lang1, lang2):
-    if imdb == 'to_be_found':
-        subs = [generate_sub('one'),
-                generate_sub('two')
+    if imdb == 'to_be_not_found':
+        return None
+    else:
+        subs = [generate_sub(imdb, lang1),
+                generate_sub(imdb, lang2)
                 ]
         return pairsubs.SubPair(subs)
-    else:
-        return None
 
 
 class SubTestCase(TestCase):
 
     def test_create_models(self):
-        pair = mock_pair_sub('to_be_found', 'rus', 'eng')
+        pair = mock_pair_sub('12345', 'rus', 'eng')
         sub_pair = models.create_subs(pair)
         self.assertIsInstance(sub_pair, models.SubPair)
         self.assertEqual(sub_pair.first_start, 0)
         self.assertEqual(sub_pair.first_end, 90100)
         self.assertEqual(sub_pair.second_start, 0)
         self.assertEqual(sub_pair.second_end, 90100)
+        self.assertEqual(sub_pair.id_movie_imdb, '12345')
+        self.assertEqual(sub_pair.first_lang, 'rus')
+        self.assertEqual(sub_pair.second_lang, 'eng')
 
 
 
@@ -92,11 +94,12 @@ class ViewsTestCase(TestCase):
 
     @patch.object(pairsubs.SubPair, 'download', mock_pair_sub)
     def test_search_form_not_found(self):
+       # import ipdb; ipdb.set_trace()
         response = self.client.get(reverse('pairsubs:opensubtitles_search'))
         self.assertEqual(200, response.status_code)
 
         url = reverse('pairsubs:opensubtitles_search')
-        response = self.client.post(url, {'imdb':'not_to_be_found', 'lang1':'rus', 'lang2':'eng'})
+        response = self.client.post(url, {'imdb':'to_be_not_found', 'lang1':'rus', 'lang2':'eng'})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['not_found'], True)
 
@@ -113,13 +116,26 @@ class ViewsTestCase(TestCase):
         self.assertEqual(len(response.context['subtitles']['subs'][1]), 4)
 
     def test_subpair_list(self):
-        pair = mock_pair_sub('to_be_found', 'rus', 'eng')
+        pair = mock_pair_sub('1234', 'rus', 'eng')
         sub_pair = models.create_subs(pair)
 
         response = self.client.get(reverse('pairsubs:subpair-list'))
         self.assertEqual(200, response.status_code)
         #import ipdb; ipdb.set_trace()
 
-        self.assertEqual(response.context['object_list'][0].first_sub.movie_name, 'Name_one')
+        self.assertEqual(response.context['object_list'][0].first_sub.movie_name, 'Name_1234')
+
+    @patch.object(pairsubs.SubPair, 'download', mock_pair_sub)
+    def test_search_already_exists(self):
+        pair = mock_pair_sub('1234', 'rus', 'eng')
+        sub_pair = models.create_subs(pair)
+
+        response = self.client.get(reverse('pairsubs:opensubtitles_search'))
+        self.assertEqual(200, response.status_code)
+
+        url = reverse('pairsubs:opensubtitles_search')
+        response = self.client.post(url, {'imdb':'1234', 'lang1':'rus', 'lang2':'eng'})
+        self.assertEqual(response.context['already_exists'], True)
+
 
 

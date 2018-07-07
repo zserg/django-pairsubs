@@ -15,6 +15,9 @@ class SubElement(models.Model):
     subtitles = models.ForeignKey(Subs, on_delete=models.CASCADE)
 
 class SubPair(models.Model):
+    id_movie_imdb = models.CharField(max_length=100, null=True)
+    first_lang = models.CharField(max_length=3, null=True)
+    second_lang = models.CharField(max_length=3, null=True)
     first_sub = models.ForeignKey(Subs, null=True, related_name='first_sub', on_delete=models.SET_NULL)
     second_sub = models.ForeignKey(Subs, null=True, related_name='second_sub', on_delete=models.SET_NULL)
     first_start = models.IntegerField()
@@ -50,6 +53,9 @@ def create_subs(pair):
     second_end = subs[1].subelement_set.order_by('num').last().start
 
     sp = SubPair.objects.create(
+            id_movie_imdb = subs[0].id_movie_imdb,
+            first_lang =subs[0].sub_language_id,
+            second_lang =subs[1].sub_language_id,
             first_sub = subs[0],
             second_sub = subs[1],
             first_start = 0,

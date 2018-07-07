@@ -229,7 +229,7 @@ class SubPair:
             if sub:
                 print("Downloading {} ...".format(lang))
                 sub_b = osub.download_sub(sub)
-                # import ipdb; ipdb.set_trace()
+                #import ipdb; ipdb.set_trace()
                 s = Subs(sub_b, sub)
                 subs.append(s)
             else:

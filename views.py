@@ -48,7 +48,6 @@ def opensubtitles_search(request):
     status.update({'form': form})
     return render(request, "pairsubs/search.html", status)
 
-
 def opensubtitles_download(request):
     return HttpResponse("ToDo")
 
@@ -60,8 +59,8 @@ def subpair_info(request, id):
     return HttpResponse(elements)
 
 def subpair_show(request, id):
-    offset = int(request.GET['offset'])
-    length = int(request.GET['length'])
+    offset = int(request.GET.get('offset', '0'))
+    length = int(request.GET.get('length', '0'))
     subtitles = get_subtitles(id, offset, length)
     #import ipdb; ipdb.set_trace()
 

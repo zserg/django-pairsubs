@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 from unittest.mock import MagicMock
 from unittest.mock import patch
 import srt
+import random
 from datetime import timedelta
 
 from pairsubs import pairsubs
@@ -41,7 +42,6 @@ def mock_pair_sub(imdb, lang1, lang2):
                 generate_sub(imdb, lang2)
                 ]
         return pairsubs.SubPair(subs)
-
 
 class SubTestCase(TestCase):
 
@@ -95,9 +95,6 @@ class ViewsTestCase(TestCase):
     @patch.object(pairsubs.SubPair, 'download', mock_pair_sub)
     def test_search_form_not_found(self):
        # import ipdb; ipdb.set_trace()
-        response = self.client.get(reverse('pairsubs:opensubtitles_search'))
-        self.assertEqual(200, response.status_code)
-
         url = reverse('pairsubs:opensubtitles_search')
         response = self.client.post(url, {'imdb':'to_be_not_found', 'lang1':'rus', 'lang2':'eng'})
         self.assertEqual(response.status_code, 200)
@@ -115,6 +112,18 @@ class ViewsTestCase(TestCase):
         self.assertEqual(len(response.context['subtitles']['subs'][0]), 4)
         self.assertEqual(len(response.context['subtitles']['subs'][1]), 4)
 
+    @patch('pairsubs.models.randrange', return_value=12000)
+    def test_subpair_show_random(self, mock_randrange):
+        pair = mock_pair_sub('to_be_found', 'rus', 'eng')
+        sub_pair = models.create_subs(pair)
+
+        response = self.client.get(reverse('pairsubs:subpair_show', args=(sub_pair.id,)))
+        self.assertEqual(200, response.status_code)
+        #import ipdb; ipdb.set_trace()
+
+        self.assertEqual(len(response.context['subtitles']['subs'][0]), 4)
+        self.assertEqual(len(response.context['subtitles']['subs'][1]), 4)
+
     def test_subpair_list(self):
         pair = mock_pair_sub('1234', 'rus', 'eng')
         sub_pair = models.create_subs(pair)
@@ -125,13 +134,9 @@ class ViewsTestCase(TestCase):
 
         self.assertEqual(response.context['object_list'][0].first_sub.movie_name, 'Name_1234')
 
-    @patch.object(pairsubs.SubPair, 'download', mock_pair_sub)
     def test_search_already_exists(self):
         pair = mock_pair_sub('1234', 'rus', 'eng')
         sub_pair = models.create_subs(pair)
-
-        response = self.client.get(reverse('pairsubs:opensubtitles_search'))
-        self.assertEqual(200, response.status_code)
 
         url = reverse('pairsubs:opensubtitles_search')
         response = self.client.post(url, {'imdb':'1234', 'lang1':'rus', 'lang2':'eng'})

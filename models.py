@@ -1,5 +1,9 @@
 from django.db import models
 
+from random import randrange
+
+DEFAULT_LENGTH = 30000
+
 class Subs(models.Model):
     movie_name = models.CharField(max_length=100)
     sub_language_id = models.CharField(max_length=3)
@@ -67,12 +71,22 @@ def create_subs(pair):
     return sp
 
 def get_subtitles(id, offset, length):
-    subs_pair = SubPair.objects.get(pk=id)
-    subs = []
     #import ipdb; ipdb.set_trace()
+    if not length:
+        length = DEFAULT_LENGTH
+
+    subs_pair = SubPair.objects.get(pk=id)
+    if offset:
+        start = offset
+    else:
+        start = randrange(subs_pair.first_end)
+
+    end = start + length
+
+    subs = []
     for sub in subs_pair.first_sub, subs_pair.second_sub:
-        elements = sub.subelement_set.filter(start__lte=(offset+length),
-                                              end__gte=offset).order_by('num')
+        elements = sub.subelement_set.filter(start__lte=end,
+                                              end__gte=start).order_by('num')
         subs.append([e.text for e in elements])
 
     sub_info = {'name':'Name'}

@@ -1,0 +1,6 @@
+beautifulsoup4==4.6.0
+bs4==0.0.1
+Django==2.0.7
+pytz==2018.5
+six==1.11.0
+srt==1.6.0

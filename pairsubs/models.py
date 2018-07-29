@@ -44,10 +44,8 @@ def create_subs(pair):
     Create pair of subtitles
     Args:
        :obj:`SubPair`
-
     '''
     subs = []
-    #import ipdb; ipdb.set_trace()
     for s in pair.subs:
         s_i = Subs.objects.create(
             movie_name = s.sub_info['MovieName'],
@@ -86,7 +84,14 @@ def create_subs(pair):
     return sp
 
 def get_subtitles(id, offset, length):
-    #import ipdb; ipdb.set_trace()
+    '''
+    Returns set of subtitles (with info) starting from "offset"
+    and having a duration of "length"
+    Args:
+        offset (int): start time of subtitles (milliseconds)
+        length (int): diration of a set of subtitles
+    '''
+
     if not length:
         length = DEFAULT_LENGTH
 

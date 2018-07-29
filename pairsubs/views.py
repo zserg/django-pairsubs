@@ -7,7 +7,7 @@ from django.views.generic.list import ListView
 
 from . import pairsubs
 from .forms import SubSearchForm
-from .models import SubPair
+from .models import PairOfSubs
 from .models import get_subtitles, create_subs
 
 def index(request):
@@ -28,7 +28,7 @@ def opensubtitles_search(request):
             imdb = form.cleaned_data['imdb']
             lang1 = form.cleaned_data['lang1']
             lang2 = form.cleaned_data['lang2']
-            sp = SubPair.objects.filter(id_movie_imdb = imdb,
+            sp = PairOfSubs.objects.filter(id_movie_imdb = imdb,
                                      first_lang = lang1,
                                      second_lang = lang2)
             if not sp: # check if already exists
@@ -52,7 +52,7 @@ def opensubtitles_download(request):
     return HttpResponse("ToDo")
 
 def subpair_info(request, id):
-    subs_pair = SubPair.objects.get(pk=id)
+    subs_pair = PairOfSubs.objects.get(pk=id)
     sub1 = subs_pair.first_sub
     sub2 = subs_pair.second_sub
     elements = sub1.subelement_set.all()
@@ -74,7 +74,7 @@ def download_sub(imdb, lang1, lang2):
 
 class SubPairListView(ListView):
 
-    model = SubPair
+    model = PairOfSubs
     paginate_by = 100  # if pagination is desired
     ordering = ['first_sub__movie_name']
 

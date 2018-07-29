@@ -5,6 +5,9 @@ from random import randrange
 DEFAULT_LENGTH = 30000
 
 class Subs(models.Model):
+    '''
+    Store subtitles information
+    '''
     movie_name = models.CharField(max_length=100)
     sub_language_id = models.CharField(max_length=3)
     sub_file_name = models.CharField(max_length=100)
@@ -12,13 +15,19 @@ class Subs(models.Model):
     id_sub_file = models.CharField(max_length=100)
 
 class SubElement(models.Model):
+    '''
+    Element of Subtitles
+    '''
     num = models.IntegerField()
     start = models.IntegerField()
     end = models.IntegerField()
     text = models.CharField(max_length=220)
     subtitles = models.ForeignKey(Subs, on_delete=models.CASCADE)
 
-class SubPair(models.Model):
+class PairOfSubs(models.Model):
+    '''
+    Pair of subtitles
+    '''
     id_movie_imdb = models.CharField(max_length=100, null=True)
     first_lang = models.CharField(max_length=3, null=True)
     second_lang = models.CharField(max_length=3, null=True)
@@ -31,6 +40,12 @@ class SubPair(models.Model):
 
 
 def create_subs(pair):
+    '''
+    Create pair of subtitles
+    Args:
+       :obj:`SubPair`
+
+    '''
     subs = []
     #import ipdb; ipdb.set_trace()
     for s in pair.subs:
@@ -56,7 +71,7 @@ def create_subs(pair):
     first_end = subs[0].subelement_set.order_by('num').last().start
     second_end = subs[1].subelement_set.order_by('num').last().start
 
-    sp = SubPair.objects.create(
+    sp = PairOfSubs.objects.create(
             id_movie_imdb = subs[0].id_movie_imdb,
             first_lang =subs[0].sub_language_id,
             second_lang =subs[1].sub_language_id,
@@ -75,7 +90,7 @@ def get_subtitles(id, offset, length):
     if not length:
         length = DEFAULT_LENGTH
 
-    subs_pair = SubPair.objects.get(pk=id)
+    subs_pair = PairOfSubs.objects.get(pk=id)
     if offset:
         start = offset
     else:

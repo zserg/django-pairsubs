@@ -41,14 +41,14 @@ def mock_pair_sub(imdb, lang1, lang2):
         subs = [generate_sub(imdb, lang1),
                 generate_sub(imdb, lang2)
                 ]
-        return pairsubs.SubPair(subs)
+        return pairsubs.PairOfSubs(subs)
 
 class SubTestCase(TestCase):
 
     def test_create_models(self):
         pair = mock_pair_sub('12345', 'rus', 'eng')
         sub_pair = models.create_subs(pair)
-        self.assertIsInstance(sub_pair, models.SubPair)
+        self.assertIsInstance(sub_pair, models.PairOfSubs)
         self.assertEqual(sub_pair.first_start, 0)
         self.assertEqual(sub_pair.first_end, 90100)
         self.assertEqual(sub_pair.second_start, 0)
@@ -87,7 +87,7 @@ class ViewsTestCase(TestCase):
 
         url = reverse('pairsubs:opensubtitles_search')
         response = self.client.post(url, {'imdb':'to_be_found', 'lang1':'rus', 'lang2':'eng'})
-        p = models.SubPair.objects.get()
+        p = models.PairOfSubs.objects.get()
         self.assertRedirects(response, reverse('pairsubs:subpair_info', args=(p.pk,)),
                 status_code=302, target_status_code=200)
 

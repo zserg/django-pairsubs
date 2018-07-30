@@ -31,11 +31,10 @@ def opensubtitles_search(request):
             sp = PairOfSubs.objects.filter(id_movie_imdb = imdb,
                                      first_lang = lang1,
                                      second_lang = lang2)
-            if not sp: # check if already exists
+            if not sp: # check if not exists already
                 pair = download_sub(imdb, lang1, lang2)
                 if pair:
                     sub_pair = create_subs(pair)
-                    #import ipdb; ipdb.set_trace()
                     return HttpResponseRedirect(reverse('pairsubs:subpair_info', args=(sub_pair.id,)))
                 else:
                     status['not_found'] = True
@@ -54,9 +53,13 @@ def opensubtitles_download(request):
 def subpair_info(request, id):
     subs_pair = PairOfSubs.objects.get(pk=id)
     sub1 = subs_pair.first_sub
-    sub2 = subs_pair.second_sub
-    elements = sub1.subelement_set.all()
-    return HttpResponse(elements)
+    info = {'MovieName': sub1.movie_name,
+            'Languages': (subs_pair.first_lang, subs_pair.second_lang),
+            'IMDB': sub1.id_movie_imdb,
+            'id': id
+            }
+
+    return render(request, 'pairsubs/sub_info.html', {'sub_info': info})
 
 def subpair_show(request, id):
     offset = int(request.GET.get('offset', '0'))

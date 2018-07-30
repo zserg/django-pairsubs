@@ -142,5 +142,22 @@ class ViewsTestCase(TestCase):
         response = self.client.post(url, {'imdb':'1234', 'lang1':'rus', 'lang2':'eng'})
         self.assertEqual(response.context['already_exists'], True)
 
+    def test_subpair_info(self):
+        pair = mock_pair_sub('to_be_found', 'rus', 'eng')
+        sub_pair = models.create_subs(pair)
 
+        response = self.client.get(reverse('pairsubs:subpair_info', args=(sub_pair.id,)))
+        self.assertEqual(200, response.status_code)
+
+        self.assertEqual(response.context['sub_info']['MovieName'], 'Name_to_be_found')
+        self.assertEqual(response.context['sub_info']['Languages'], ('rus', 'eng'))
+        self.assertEqual(response.context['sub_info']['IMDB'], 'to_be_found')
+        self.assertEqual(response.context['sub_info']['id'], sub_pair.id)
+
+        soup = BeautifulSoup(response.content, 'html.parser')
+        link = soup.findAll('a')
+        #import ipdb; ipdb.set_trace()
+
+        self.assertEqual(link[0]['href'],reverse('pairsubs:subpair_show', args=(sub_pair.id,) ))
+        self.assertEqual(link[1]['href'],reverse('pairsubs:subair_show', args=(sub_pair.id,) ))
 

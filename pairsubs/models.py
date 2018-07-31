@@ -1,6 +1,7 @@
 from django.db import models
+from django.db.models import Max
 
-from random import randrange
+from random import randrange, randint
 
 DEFAULT_LENGTH = 30000
 
@@ -95,7 +96,11 @@ def get_subtitles(id, offset, length):
     if not length:
         length = DEFAULT_LENGTH
 
-    subs_pair = PairOfSubs.objects.get(pk=id)
+    if id:
+        subs_pair = PairOfSubs.objects.get(pk=id)
+    else:
+        subs_pair = get_random_pairofsubs()
+
     if offset:
         start = offset
     else:
@@ -112,5 +117,11 @@ def get_subtitles(id, offset, length):
     sub_info = {'name':'Name'}
     return {'sub_info': sub_info, 'subs': subs}
 
-
+def get_random_pairofsubs():
+    max_id = PairOfSubs.objects.all().aggregate(max_id=Max("id"))['max_id']
+    while True:
+        pk = randint(1, max_id)
+        ps = PairOfSubs.objects.filter(pk=pk).first()
+        if ps:
+            return ps
 

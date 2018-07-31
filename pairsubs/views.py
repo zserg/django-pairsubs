@@ -13,7 +13,6 @@ from .models import get_subtitles, create_subs
 def home(request):
     return render(request, "pairsubs/home.html")
 
-
 @require_http_methods(["GET", "POST"])
 def opensubtitles_search(request):
     #import ipdb; ipdb.set_trace()

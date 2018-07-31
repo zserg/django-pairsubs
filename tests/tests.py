@@ -64,6 +64,16 @@ class ViewsTestCase(TestCase):
     def SetUp(self):
         self.client = Client()
 
+    def test_home(self):
+        response = self.client.get(reverse('pairsubs:home'))
+        self.assertEqual(200, response.status_code)
+        soup = BeautifulSoup(response.content, 'html.parser')
+        hrefs = [x['href'] for x in soup.find_all('a', href=True)]
+        self.assertIn(reverse('pairsubs:opensubtitles_search'), hrefs)
+        self.assertIn(reverse('pairsubs:subpair_show_random'), hrefs)
+        self.assertIn(reverse('pairsubs:subpair-list'), hrefs)
+
+
     @patch.object(pairsubs.SubPair, 'download', mock_pair_sub)
     def test_search_form(self):
         response = self.client.get(reverse('pairsubs:opensubtitles_search'))

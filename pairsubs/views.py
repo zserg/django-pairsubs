@@ -10,8 +10,9 @@ from .forms import SubSearchForm
 from .models import PairOfSubs
 from .models import get_subtitles, create_subs
 
-def index(request):
-    return HttpResponse("Hello, world! You are at the Pairsubs index!")
+def home(request):
+    return render(request, "pairsubs/home.html")
+
 
 @require_http_methods(["GET", "POST"])
 def opensubtitles_search(request):
@@ -61,7 +62,7 @@ def subpair_info(request, id):
 
     return render(request, 'pairsubs/sub_info.html', {'sub_info': info})
 
-def subpair_show(request, id):
+def subpair_show(request, id=None):
     offset = int(request.GET.get('offset', '0'))
     length = int(request.GET.get('length', '0'))
     subtitles = get_subtitles(id, offset, length)

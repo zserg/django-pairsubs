@@ -1,3 +1,7 @@
+{% extends "site_base.html" %}
+{% load bootstrap4 %}
+
+{% block content %}
 <h1>Subtitles Pair</h1>
 
 {{ subtitles.sub_info.name }}
@@ -7,6 +11,8 @@
 {{ e }}
 {% endfor %}
 {% endfor %}
+
+{% endblock %}
 
 
 

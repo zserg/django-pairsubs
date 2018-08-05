@@ -99,30 +99,34 @@ def get_subtitles(sub_id, offset, length):
     else:
         subs_pair = get_random_pairofsubs()
 
-    if not length:
-        length = DEFAULT_LENGTH
+    if subs_pair:
+        if not length:
+            length = DEFAULT_LENGTH
 
-    if offset:
-        start = offset
+        if offset:
+            start = offset
+        else:
+            start = randrange(subs_pair.first_end)
+
+        end = start + length
+
+        subs = []
+        for sub in subs_pair.first_sub, subs_pair.second_sub:
+            elements = sub.subelement_set.filter(start__lte=end,
+                                                  end__gte=start).order_by('num')
+            subs.append([e.text for e in elements])
+
+        sub_info = {'name':'Name'}
+        return {'sub_info': sub_info, 'subs': subs}
     else:
-        start = randrange(subs_pair.first_end)
-
-    end = start + length
-
-    subs = []
-    for sub in subs_pair.first_sub, subs_pair.second_sub:
-        elements = sub.subelement_set.filter(start__lte=end,
-                                              end__gte=start).order_by('num')
-        subs.append([e.text for e in elements])
-
-    sub_info = {'name':'Name'}
-    return {'sub_info': sub_info, 'subs': subs}
+        return None
 
 def get_random_pairofsubs():
     max_id = PairOfSubs.objects.all().aggregate(max_id=Max("id"))['max_id']
-    while True:
-        pk = randint(1, max_id)
-        ps = PairOfSubs.objects.filter(pk=pk).first()
-        if ps:
-            return ps
+    if max_id:
+        while True:
+            pk = randint(1, max_id)
+            ps = PairOfSubs.objects.filter(pk=pk).first()
+            if ps:
+                return ps
 

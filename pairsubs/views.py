@@ -70,8 +70,11 @@ def subpair_show(request):
     offset = int(request.GET.get('offset', '0'))
     length = int(request.GET.get('length', '0'))
     subtitles = get_subtitles(sub_id, offset, length)
+    if subtitles:
+        return render(request, 'pairsubs/show.html', {'subtitles': subtitles})
+    else:
+        return render(request, 'pairsubs/show.html', {'subtitles': None})
 
-    return render(request, 'pairsubs/show.html', {'subtitles': subtitles})
 
 
 def download_sub(imdb, lang1, lang2):

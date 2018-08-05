@@ -73,7 +73,8 @@ def runtests(test_path='tests'):
 		    ],
 		},
 	    },
-]
+],
+STATIC_URL = '/static/',
 )
 
 

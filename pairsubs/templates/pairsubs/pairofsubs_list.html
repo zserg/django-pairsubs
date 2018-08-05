@@ -5,7 +5,7 @@
 <h1>Subtitles</h1>
 <ul>
   {% for subpair in object_list %}
-      <li>{{ subpair.first_sub.movie_name }}</li>
+  <li><a href="{% url 'pairsubs:subpair_info' subpair.id %}">{{ subpair.first_sub.movie_name }}</a></li>
   {% empty %}
       <li>No articles yet.</li>
   {% endfor %}

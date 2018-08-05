@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
 from django.urls import reverse
@@ -64,16 +64,22 @@ def subpair_info(request, id):
 def subpair_show(request):
     #import ipdb; ipdb.set_trace()
     sub_id = request.GET.get('id', None)
+    return render(request, 'pairsubs/show.html', {'id': sub_id})
+
+def get_subtitles_data(request):
+    #import ipdb; ipdb.set_trace()
+    sub_id = request.GET.get('id', None)
     if sub_id:
         sub_id = int(sub_id)
 
     offset = int(request.GET.get('offset', '0'))
     length = int(request.GET.get('length', '0'))
     subtitles = get_subtitles(sub_id, offset, length)
-    if subtitles:
-        return render(request, 'pairsubs/show.html', {'subtitles': subtitles})
-    else:
-        return render(request, 'pairsubs/show.html', {'subtitles': None})
+    return JsonResponse({'data':subtitles})
+    # if subtitles:
+    #     return render(request, 'pairsubs/show.html', {'subtitles': subtitles, 'id': sub_id})
+    # else:
+    #     return render(request, 'pairsubs/show.html', {'subtitles': None})
 
 
 

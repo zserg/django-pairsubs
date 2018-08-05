@@ -6,6 +6,7 @@ from unittest.mock import MagicMock
 from unittest.mock import patch
 import srt
 import random
+import json
 from datetime import timedelta
 
 from pairsubs import pairsubs
@@ -119,20 +120,8 @@ class ViewsTestCase(TestCase):
                         {'id':sub_pair.id, 'offset':11000, 'length':30000})
         self.assertEqual(200, response.status_code)
 
-        self.assertEqual(len(response.context['subtitles']['subs'][0]), 4)
-        self.assertEqual(len(response.context['subtitles']['subs'][1]), 4)
+        self.assertIsNotNone(response.context['id'])
 
-    @patch('pairsubs.models.randrange', return_value=12000)
-    def test_subpair_show_random(self, mock_randrange):
-        pair = mock_pair_sub('to_be_found', 'rus', 'eng')
-        sub_pair = models.create_subs(pair)
-
-        response = self.client.get(reverse('pairsubs:subpair_show'))
-        self.assertEqual(200, response.status_code)
-        #import ipdb; ipdb.set_trace()
-
-        self.assertEqual(len(response.context['subtitles']['subs'][0]), 4)
-        self.assertEqual(len(response.context['subtitles']['subs'][1]), 4)
 
     def test_subpair_list(self):
         pair = mock_pair_sub('1234', 'rus', 'eng')
@@ -174,9 +163,25 @@ class ViewsTestCase(TestCase):
         self.assertIn(reverse('pairsubs:subpair_show'), hrefs)
 
 
-    def test_subpair_show_random_empty_base(self):
-        response = self.client.get(reverse('pairsubs:subpair_show'))
-        self.assertEqual(200, response.status_code)
+    # def test_subpair_show_random_empty_base(self):
+    #     response = self.client.get(reverse('pairsubs:subpair_show'))
+    #     self.assertEqual(200, response.status_code)
 
-        self.assertEqual(response.context['subtitles'], None)
+    #     self.assertEqual(response.context['subtitles'], None)
+
+    @patch('pairsubs.models.randrange', return_value=12000)
+    def test_get_subtitles_data(self, mock_randrange):
+        pair = mock_pair_sub('to_be_found', 'rus', 'eng')
+        sub_pair = models.create_subs(pair)
+
+        response = self.client.get(reverse('pairsubs:get_subtitles_data'))
+        self.assertEqual(200, response.status_code)
+        #import ipdb; ipdb.set_trace()
+
+        text = json.loads(response.content.decode('utf-8'))
+        self.assertIsNotNone(text['data'])
+        self.assertIsNotNone(text['data']['sub_info'])
+        self.assertIsNotNone(text['data']['subs'])
+        self.assertEqual(len(text['data']['subs'][0]), 4)
+
 

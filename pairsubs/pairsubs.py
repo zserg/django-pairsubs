@@ -33,12 +33,11 @@ MAX_RETRY = 3
 
 def retry(func):
     def wrapper(*args, **kwargs):
-        for _ in range(MAX_RETRY):
+        for i in range(MAX_RETRY):
             try:
                 res = func(*args, **kwargs)
-            except xmlrpc.client.ProtocolError:
-                print("Exception")
-                pass
+            except xmlrpc.client.ProtocolError as e:
+                print("Try #{} failed: ".format(1), e)
             else:
                 return res
     return wrapper

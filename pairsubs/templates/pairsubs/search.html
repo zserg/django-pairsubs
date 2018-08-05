@@ -1,5 +1,4 @@
 {% extends "site_base.html" %}
-{% load bootstrap4 %}
 
 {% block content %}
 <h1>Search Opensubtitles.org</h1>
@@ -8,9 +7,18 @@
 
 <form action="{% url 'pairsubs:opensubtitles_search' %}" method="post" name="search_subs" class="form">
   {% csrf_token %}
-  {% bootstrap_form form %}
-    {% buttons %}
-    <input type="submit" value="Search" class="btn btn-primary" />
-    {% endbuttons %}
+
+  {% for field in form %}
+      <div class="form-group">
+	  {{ field.errors }}
+	  {{ field.label_tag }} {{ field }}
+	  {% if field.help_text %}
+	  <small class="form-text text-muted">{{ field.help_text|safe }}</small>
+	  {% endif %}
+      </div>
+  {% endfor %}
+
+  <button type="submit" class="btn btn-dark">Search</button>
   </form>
+
 {% endblock %}

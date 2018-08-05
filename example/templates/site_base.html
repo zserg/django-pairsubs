@@ -3,7 +3,7 @@
 {# Load CSS and JavaScript #}
 {% bootstrap_css %}
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <a class="navbar-brand" href="{% url 'pairsubs:home' %}">PairSubs</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
        <span class="navbar-toggler-icon"></span>
@@ -25,7 +25,9 @@
 {% block bootstrap4_title %}{% block title %}{% endblock %}{% endblock %}
 
 
-{% block content %} {% endblock %}
+<div class="container">
+{% block content %}{% endblock %}
+</div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 {% block javascript %} {% endblock %}
 

@@ -84,22 +84,23 @@ def create_subs(pair):
 
     return sp
 
-def get_subtitles(id, offset, length):
+def get_subtitles(sub_id, offset, length):
     '''
     Returns set of subtitles (with info) starting from "offset"
     and having a duration of "length"
     Args:
+        sub_id (int): PairOfSubs id
         offset (int): start time of subtitles (milliseconds)
         length (int): diration of a set of subtitles
     '''
 
-    if not length:
-        length = DEFAULT_LENGTH
-
-    if id:
-        subs_pair = PairOfSubs.objects.get(pk=id)
+    if sub_id:
+        subs_pair = PairOfSubs.objects.get(pk=sub_id)
     else:
         subs_pair = get_random_pairofsubs()
+
+    if not length:
+        length = DEFAULT_LENGTH
 
     if offset:
         start = offset

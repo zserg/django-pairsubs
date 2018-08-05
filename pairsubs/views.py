@@ -61,11 +61,15 @@ def subpair_info(request, id):
 
     return render(request, 'pairsubs/sub_info.html', {'sub_info': info})
 
-def subpair_show(request, id=None):
+def subpair_show(request):
+    #import ipdb; ipdb.set_trace()
+    sub_id = request.GET.get('id', None)
+    if sub_id:
+        sub_id = int(sub_id)
+
     offset = int(request.GET.get('offset', '0'))
     length = int(request.GET.get('length', '0'))
-    subtitles = get_subtitles(id, offset, length)
-    #import ipdb; ipdb.set_trace()
+    subtitles = get_subtitles(sub_id, offset, length)
 
     return render(request, 'pairsubs/show.html', {'subtitles': subtitles})
 

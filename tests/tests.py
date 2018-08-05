@@ -106,7 +106,6 @@ class ViewsTestCase(TestCase):
 
     @patch.object(pairsubs.SubPair, 'download', mock_pair_sub)
     def test_search_form_not_found(self):
-       # import ipdb; ipdb.set_trace()
         url = reverse('pairsubs:opensubtitles_search')
         response = self.client.post(url, {'imdb':'to_be_not_found', 'lang1':'rus', 'lang2':'eng'})
         self.assertEqual(response.status_code, 200)
@@ -116,11 +115,9 @@ class ViewsTestCase(TestCase):
         pair = mock_pair_sub('to_be_found', 'rus', 'eng')
         sub_pair = models.create_subs(pair)
 
-        #response = self.client.get(reverse('pairsubs:subpair_show', args=(sub_pair.id,)),
         response = self.client.get(reverse('pairsubs:subpair_show'),
                         {'id':sub_pair.id, 'offset':11000, 'length':30000})
         self.assertEqual(200, response.status_code)
-        #import ipdb; ipdb.set_trace()
 
         self.assertEqual(len(response.context['subtitles']['subs'][0]), 4)
         self.assertEqual(len(response.context['subtitles']['subs'][1]), 4)

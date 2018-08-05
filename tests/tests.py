@@ -72,7 +72,7 @@ class ViewsTestCase(TestCase):
         hrefs = [x['href'] for x in soup.find_all('a', href=True)]
 
         self.assertIn(reverse('pairsubs:opensubtitles_search'), hrefs)
-        self.assertIn(reverse('pairsubs:subpair_show_random'), hrefs)
+        self.assertIn(reverse('pairsubs:subpair_show'), hrefs)
         self.assertIn(reverse('pairsubs:subpair-list'), hrefs)
 
 
@@ -116,8 +116,9 @@ class ViewsTestCase(TestCase):
         pair = mock_pair_sub('to_be_found', 'rus', 'eng')
         sub_pair = models.create_subs(pair)
 
-        response = self.client.get(reverse('pairsubs:subpair_show', args=(sub_pair.id,)),
-                        {'offset':11000, 'length':30000})
+        #response = self.client.get(reverse('pairsubs:subpair_show', args=(sub_pair.id,)),
+        response = self.client.get(reverse('pairsubs:subpair_show'),
+                        {'id':sub_pair.id, 'offset':11000, 'length':30000})
         self.assertEqual(200, response.status_code)
         #import ipdb; ipdb.set_trace()
 
@@ -129,7 +130,7 @@ class ViewsTestCase(TestCase):
         pair = mock_pair_sub('to_be_found', 'rus', 'eng')
         sub_pair = models.create_subs(pair)
 
-        response = self.client.get(reverse('pairsubs:subpair_show_random'))
+        response = self.client.get(reverse('pairsubs:subpair_show'))
         self.assertEqual(200, response.status_code)
         #import ipdb; ipdb.set_trace()
 
@@ -170,6 +171,6 @@ class ViewsTestCase(TestCase):
         link = soup.findAll('a')
         #import ipdb; ipdb.set_trace()
 
-        self.assertEqual(link[0]['href'],reverse('pairsubs:subpair_show', args=(sub_pair.id,) ))
+        self.assertEqual(link[0]['href'], reverse('pairsubs:subpair_show'))
         #self.assertEqual(link[1]['href'],reverse('pairsubs:subair_show', args=(sub_pair.id,) ))
 

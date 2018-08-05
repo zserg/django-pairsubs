@@ -170,16 +170,13 @@ class ViewsTestCase(TestCase):
 
         hrefs = [x['href'] for x in soup.find_all('a', href=True)]
 
-        self.assertIn(reverse('pairsubs:subpair_show')+'?', hrefs)
+        self.assertIn(reverse('pairsubs:subpair_show')+'?id={}'.format(sub_pair.id), hrefs)
         self.assertIn(reverse('pairsubs:subpair_show'), hrefs)
 
-        #self.assertEqual(link[0]['href'], reverse('pairsubs:subpair_show'))
-        #self.assertEqual(link[1]['href'],reverse('pairsubs:subair_show', args=(sub_pair.id,) ))
 
     def test_subpair_show_random_empty_base(self):
         response = self.client.get(reverse('pairsubs:subpair_show'))
         self.assertEqual(200, response.status_code)
-        #import ipdb; ipdb.set_trace()
 
         self.assertEqual(response.context['subtitles'], None)
 

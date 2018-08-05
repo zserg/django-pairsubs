@@ -17,6 +17,8 @@ import re
 
 
 COLUMN_WIDTH = 40
+OPENSUBTUTLES_MAX_RETRY = 3
+
 
 #: Directory in which to store PaiSubs cache.
 APP_DIR = '{}/.pairsubs'.format(os.path.expanduser('~'))

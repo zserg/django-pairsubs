@@ -28,6 +28,21 @@ FILES_DIR = os.path.join(APP_DIR, 'files')
 #: File in which to store details aboud downloaded subtitles
 CACHE_DB = '{}/cache.json'.format(APP_DIR)
 
+# Opensubtitles API retry count
+MAX_RETRY = 3
+
+def retry(func):
+    def wrapper(*args, **kwargs):
+        for _ in range(MAX_RETRY):
+            try:
+                res = func(*args, **kwargs)
+            except xmlrpc.client.ProtocolError:
+                print("Exception")
+                pass
+            else:
+                return res
+    return wrapper
+
 class ProxiedTransport(xmlrpc.client.Transport):
 
     def set_proxy(self, host, port=None, headers=None):
@@ -70,6 +85,7 @@ class Opensubtitles:
         except xmlrpc.client.ProtocolError as err:
             print("Opensubtitles API protocol error: {0}".format(err))
 
+    @retry
     def login(self):
         ''' Login into api.opensubtitles.org.'''
 
@@ -91,6 +107,7 @@ class Opensubtitles:
                 top_sub = sub
         return top_sub
 
+    @retry
     def search_sub(self, imdbid, lang):
         '''
         Search the subtitles in Opensubtitles database
@@ -114,6 +131,7 @@ class Opensubtitles:
         else:
             return self._select_sub_(result['data'])
 
+    @retry
     def download_sub(self, sub):
         '''
         Download subtitles from subtitles.org.

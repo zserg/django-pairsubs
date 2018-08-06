@@ -9,6 +9,7 @@ from . import pairsubs
 from .forms import SubSearchForm
 from .models import PairOfSubs
 from .models import get_subtitles, create_subs
+from .tasks import download_sub
 
 def home(request):
     return render(request, "pairsubs/home.html")
@@ -32,14 +33,10 @@ def opensubtitles_search(request):
                                      first_lang = lang1,
                                      second_lang = lang2)
             if not sp: # check if not exists already
-                pair = download_sub(imdb, lang1, lang2)
-                if pair:
-                    sub_pair = create_subs(pair)
-                    return HttpResponseRedirect(reverse('pairsubs:subpair_info', args=(sub_pair.id,)))
-                else:
-                    status['not_found'] = True
-            else:
-                status['already_exists'] = True
+                result = download_sub.delay(imdb, lang1, lang2)
+                print(result.task_id)
+                #import ipdb; ipdb.set_trace()
+                return HttpResponseRedirect(reverse('pairsubs:status')+'?id={}'.format(result.task_id))
 
     else: # GET
         form = SubSearchForm()
@@ -60,6 +57,10 @@ def subpair_info(request, id):
             }
 
     return render(request, 'pairsubs/sub_info.html', {'sub_info': info})
+
+def status(request):
+    task_id = request.GET.get('id', None)
+    return render(request, 'pairsubs/status.html', {'status': task_id})
 
 def subpair_show(request):
     #import ipdb; ipdb.set_trace()
@@ -83,9 +84,9 @@ def get_subtitles_data(request):
 
 
 
-def download_sub(imdb, lang1, lang2):
-    pair = pairsubs.SubPair.download(imdb, lang1, lang2)
-    return pair
+# def download_sub(imdb, lang1, lang2):
+#     pair = pairsubs.SubPair.download(imdb, lang1, lang2)
+#     return pair
 
 
 class SubPairListView(ListView):

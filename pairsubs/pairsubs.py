@@ -13,7 +13,7 @@ import os
 import json
 import codecs
 import re
-
+from time import sleep
 
 
 COLUMN_WIDTH = 40
@@ -31,16 +31,8 @@ CACHE_DB = '{}/cache.json'.format(APP_DIR)
 # Opensubtitles API retry count
 MAX_RETRY = 3
 
-def retry(func):
-    def wrapper(*args, **kwargs):
-        for i in range(MAX_RETRY):
-            try:
-                res = func(*args, **kwargs)
-            except xmlrpc.client.ProtocolError as e:
-                print("Try #{} failed: ".format(1), e)
-            else:
-                return res
-    return wrapper
+# Parse fail
+# https://www.imdb.com/title/tt0583453/?ref_=tt_ep_pr
 
 class ProxiedTransport(xmlrpc.client.Transport):
 
@@ -76,24 +68,31 @@ class Opensubtitles:
             self.proxy = xmlrpc.client.ServerProxy(
                     "https://api.opensubtitles.org/xml-rpc")
 
+    def retry(func):
+        def wrapper(self, *args, **kwargs):
+            for i in range(MAX_RETRY):
+                try:
+                    res = func(self, *args, **kwargs)
+                except xmlrpc.client.ProtocolError as e:
+                    print("Try #{} failed: ".format(1), e)
+                    sleep(5)
+                else:
+                    return res
+        return wrapper
+
     def logout(self):
         ''' Logout from api.opensubtitles.org.'''
 
-        try:
-            self.proxy.LogOut(self.token)
-        except xmlrpc.client.ProtocolError as err:
-            print("Opensubtitles API protocol error: {0}".format(err))
+        print("Opensubtitles: Logout...")
+        self.proxy.LogOut(self.token)
 
     @retry
     def login(self):
         ''' Login into api.opensubtitles.org.'''
 
-        try:
-            login = self.proxy.LogIn("", "", "en", "TemporaryUserAgent")
-        except xmlrpc.client.ProtocolError as err:
-            print("Opensubtitles API protocol error: {0}".format(err))
-        else:
-            self.token = login['token']
+        print("Opensubtitles: Login...")
+        login = self.proxy.LogIn("", "", "en", "TemporaryUserAgent")
+        self.token = login['token']
 
     def _select_sub_(self, subtitles):
         ''' Select subtitles that have maximal downloads count'''
@@ -119,16 +118,13 @@ class Opensubtitles:
         Returns:
             sub (dict): subtitles info in Opensubtitles API format
         '''
+        print("Opensubtitles: search...")
         imdb = re.search('\d+', imdbid)[0]
-        try:
-            result = self.proxy.SearchSubtitles(
-                    self.token,
-                    [{'imdbid': str(imdb), 'sublanguageid': lang}],
-                    [100])
-        except xmlrpc.client.ProtocolError as err:
-            print("Opensubtitles API protocol error: {0}".format(err))
-        else:
-            return self._select_sub_(result['data'])
+        result = self.proxy.SearchSubtitles(
+                self.token,
+                [{'imdbid': str(imdb), 'sublanguageid': lang}],
+                [100])
+        return self._select_sub_(result['data'])
 
     @retry
     def download_sub(self, sub):
@@ -139,15 +135,12 @@ class Opensubtitles:
         Return:
             data_bytes (bytes): downloaded subtitles
         '''
-        try:
-            result = self.proxy.DownloadSubtitles(self.token,
-                                                  [sub['IDSubtitleFile']])
-        except xmlrpc.client.ProtocolError as err:
-            print("Opensubtitles API protocol error: {0}".format(err))
-        else:
-            data_zipped = base64.b64decode(result['data'][0]['data'])
-            data_bytes = zlib.decompress(data_zipped, 15+32)
-            return data_bytes
+        print("Opensubtitles: download...")
+        result = self.proxy.DownloadSubtitles(self.token,
+                                              [sub['IDSubtitleFile']])
+        data_zipped = base64.b64decode(result['data'][0]['data'])
+        data_bytes = zlib.decompress(data_zipped, 15+32)
+        return data_bytes
 
 
 class Subs:

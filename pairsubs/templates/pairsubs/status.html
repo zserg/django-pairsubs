@@ -1,0 +1,15 @@
+{% extends "site_base.html" %}
+{% load bootstrap4 %}
+
+{% block content %}
+{{ status }}
+
+<a href="{% url 'pairsubs:subpair_show' %}?id={{ sub_info.id }}">Learn These</a>
+<a href="{% url 'pairsubs:subpair_show' %}">Learn Random</a>
+
+{% endblock %}
+
+
+
+
+

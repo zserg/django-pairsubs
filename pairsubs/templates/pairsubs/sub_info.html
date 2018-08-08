@@ -3,7 +3,7 @@
 
 {% block content %}
 <{{ sub_info }}
-
+<div class="loader"></div>
 <a href="{% url 'pairsubs:subpair_show' %}?id={{ sub_info.id }}">Learn These</a>
 <a href="{% url 'pairsubs:subpair_show' %}">Learn Random</a>
 

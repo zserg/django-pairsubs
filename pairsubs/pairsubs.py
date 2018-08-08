@@ -260,29 +260,41 @@ class SubPair:
 
     @classmethod
     def download(cls, imdbid, lang1, lang2, enc1=None, enc2=None):
+        log = ""
+        state = "Login into Opensubtitles..."
+        print(state)
+        log += (state+"\n")
         osub = Opensubtitles()
         osub.login()
 
         subs = []
         for lang, enc in [(lang1, enc1), (lang2, enc2)]:
+            state = "Search {}...".format(lang)
+            print(state)
+            log += (state+"\n")
             sub = osub.search_sub(imdbid, lang)
             if sub:
-                print("Downloading {} ...".format(lang))
+                state = "Download {}...".format(lang)
+                print(state)
+                log += (state+"\n")
                 sub_b = osub.download_sub(sub)
-                #import ipdb; ipdb.set_trace()
                 s = Subs(sub_b, sub)
                 if s.sub:
                     subs.append(s)
                 else:
-                    print("Failed the subtitles parsing")
-                    return None
+                    state = "Failed the subtitles parsing".format(lang)
+                    print(state)
+                    log += (state+"\n")
+                    return None, log
             else:
-                print("Subtitles #{} isn't found".format(imdbid))
+                state = "Subtitles #{} isn't found".format(lang)
+                print(state)
+                log += (state+"\n")
                 osub.logout()
-                return None
+                return None, log
 
         osub.logout()
-        return cls(subs)
+        return cls(subs), log
 
     @classmethod
     def read(cls, info):

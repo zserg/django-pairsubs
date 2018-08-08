@@ -7,6 +7,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'example.settings')
 
 app = Celery('example')
 app.conf.broker_url = 'redis://localhost:6379/0'
+app.conf.result_backend = 'redis://'
 
 # Using a string here means the worker doesn't have to serialize
 # the configuration object to child processes.

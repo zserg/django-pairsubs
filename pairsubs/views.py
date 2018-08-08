@@ -4,6 +4,8 @@ from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
 from django.urls import reverse
 from django.views.generic.list import ListView
+from celery.result import AsyncResult
+import json
 
 from . import pairsubs
 from .forms import SubSearchForm
@@ -98,3 +100,15 @@ class SubPairListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
+
+def check_task(request):
+    result = AsyncResult(request.POST['task_id'])
+    status = result.status
+    result = result.result
+    print(status)
+    print(result)
+    return HttpResponse(json.dumps({
+	'status': status,
+        'result': result
+    }), content_type='application/json')
+

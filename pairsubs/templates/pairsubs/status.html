@@ -1,12 +1,21 @@
 {% extends "site_base.html" %}
 {% load bootstrap4 %}
+{% load static %}
 
 {% block content %}
-{{ status }}
+ <div id="loader"></div>
 
-<a href="{% url 'pairsubs:subpair_show' %}?id={{ sub_info.id }}">Learn These</a>
-<a href="{% url 'pairsubs:subpair_show' %}">Learn Random</a>
+<div class="status-info" style="white-space: pre-line;" ></div>
+<a id="learn-link" class="btn btn-dark"  href="{% url 'pairsubs:subpair_show' %}?id=">Learn It</a>
+<a id="search-link" class="btn btn-dark"  href="{% url 'pairsubs:opensubtitles_search' %}">Search</a>
 
+{% endblock %}
+
+{% block javascript %}
+  <script>
+    var task_id = '{{ status }}';
+  </script>
+<script src="{% static "pairsubs/check_task.js" %}"></script>
 {% endblock %}
 
 

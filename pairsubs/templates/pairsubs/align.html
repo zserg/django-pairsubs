@@ -1,0 +1,26 @@
+{% extends "site_base.html" %}
+{% load bootstrap4 %}
+{% load static %}
+
+{% block content %}
+
+{{ subs }}
+
+    <!-- <div class="row" style="position: absolute; bottom: 0px"> -->
+    <div class="row" id="text-row">
+      <div class="col-sm-6 " id="question" ></div>
+      <div class="col-sm-6 " id="answer" ></div>
+    </div>
+
+    <div class="row">
+       <div class="col-sm-12 text-center" id="result-row" >
+         <button type="button" class="btn btn-dark" id="answer-button">Show</button>
+       </div>
+    </div>
+
+
+{% endblock %}
+
+
+
+

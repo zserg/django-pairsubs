@@ -12,6 +12,7 @@ from . import pairsubs
 from .forms import SubSearchForm
 from .models import PairOfSubs
 from .models import get_subtitles, create_subs
+from .models import get_subtitles_for_alignment
 from .tasks import download_sub
 
 def home(request):
@@ -66,7 +67,6 @@ def status(request):
     return render(request, 'pairsubs/status.html', {'status': task_id})
 
 def subpair_show(request):
-    #import ipdb; ipdb.set_trace()
     sub_id = request.GET.get('id', None)
     return render(request, 'pairsubs/show.html', {'id': sub_id})
 
@@ -103,4 +103,12 @@ def check_task(request):
 	'status': status,
         'result': result
     }), content_type='application/json')
+
+
+def subpair_align(request, id):
+    subs = get_subtitles_for_alignment(id)
+    return render(request, 'pairsubs/align.html', {'id': id, 'subs': subs})
+
+
+
 

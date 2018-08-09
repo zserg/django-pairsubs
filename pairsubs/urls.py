@@ -12,6 +12,7 @@ urlpatterns = [
     path('pairinfo/<int:id>/', views.subpair_info, name='subpair_info'),
     path('pairshow/', views.subpair_show, name='subpair_show'),
     path('pairshow/get_data/', views.get_subtitles_data, name='get_subtitles_data'),
+    path('align/<int:id>/', views.subpair_align, name='subpair_align'),
 
 ]
 

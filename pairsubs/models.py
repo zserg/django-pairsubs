@@ -121,6 +121,26 @@ def get_subtitles(sub_id, offset, length):
     else:
         return None
 
+def get_subtitles_for_alignment(sub_id):
+    '''
+    Returns set of subtitles for manual alignment
+    Args:
+        sub_id (int): PairOfSubs id
+    '''
+
+    subs_pair = PairOfSubs.objects.get(pk=sub_id)
+    subs = []
+    for sub in subs_pair.first_sub, subs_pair.second_sub:
+        elements = sub.subelement_set.all().order_by('num')[0:4]
+        subs.append([(e.num, e.text) for e in elements])
+        els = sub.subelement_set.all().order_by('num')
+        max = len(els)
+        elements = els[max-4:max]
+        subs.append([(e.num, e.text) for e in elements])
+
+    sub_info = {'name':'Name'}
+    return {'sub_info': sub_info, 'subs': subs}
+
 def get_random_pairofsubs():
     max_id = PairOfSubs.objects.all().aggregate(max_id=Max("id"))['max_id']
     if max_id:

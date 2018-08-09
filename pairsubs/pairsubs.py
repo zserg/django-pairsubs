@@ -287,7 +287,7 @@ class SubPair:
                     log += (state+"\n")
                     return None, log
             else:
-                state = "Subtitles #{} isn't found".format(lang)
+                state = "Subtitles #{} aren't found".format(lang)
                 print(state)
                 log += (state+"\n")
                 osub.logout()

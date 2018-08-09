@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.views.generic.list import ListView
 from celery.result import AsyncResult
 import json
+import re
 
 from . import pairsubs
 from .forms import SubSearchForm
@@ -19,26 +20,26 @@ def home(request):
 @require_http_methods(["GET", "POST"])
 def opensubtitles_search(request):
     #import ipdb; ipdb.set_trace()
-    status = {
-            'not_found': False,
-            'already_exists': False
-            }
-
+    status = {}
     if request.method == 'POST':
-        #import ipdb; ipdb.set_trace()
         form = SubSearchForm(request.POST)
         if form.is_valid():
-            imdb = form.cleaned_data['imdb']
-            lang1 = form.cleaned_data['lang1']
-            lang2 = form.cleaned_data['lang2']
-            sp = PairOfSubs.objects.filter(id_movie_imdb = imdb,
-                                     first_lang = lang1,
-                                     second_lang = lang2)
-            if not sp: # check if not exists already
-                result = download_sub.delay(imdb, lang1, lang2)
-                print(result.task_id)
-                #import ipdb; ipdb.set_trace()
-                return HttpResponseRedirect(reverse('pairsubs:status')+'?id={}'.format(result.task_id))
+            imdb_r = re.search('\d+', form.cleaned_data['imdb'])
+            if imdb_r:
+                imdb = imdb_r[0].lstrip('0')
+                lang1 = form.cleaned_data['lang1']
+                lang2 = form.cleaned_data['lang2']
+                sp = PairOfSubs.objects.filter(id_movie_imdb = imdb,
+                                         first_lang = lang1,
+                                         second_lang = lang2)
+                if not sp: # check if not exists already
+                    result = download_sub.delay(imdb, lang1, lang2)
+                    print(result.task_id)
+                    #import ipdb; ipdb.set_trace()
+                    return HttpResponseRedirect(reverse('pairsubs:status')+'?id={}'.format(result.task_id))
+                else:
+                    status.update({'error_message':
+                        "Subtitles IMDB {} are already exiist in database".format(imdb)})
 
     else: # GET
         form = SubSearchForm()
@@ -79,23 +80,14 @@ def get_subtitles_data(request):
     length = int(request.GET.get('length', '0'))
     subtitles = get_subtitles(sub_id, offset, length)
     return JsonResponse({'data':subtitles})
-    # if subtitles:
-    #     return render(request, 'pairsubs/show.html', {'subtitles': subtitles, 'id': sub_id})
-    # else:
-    #     return render(request, 'pairsubs/show.html', {'subtitles': None})
-
-
-
-# def download_sub(imdb, lang1, lang2):
-#     pair = pairsubs.SubPair.download(imdb, lang1, lang2)
-#     return pair
 
 
 class SubPairListView(ListView):
 
     model = PairOfSubs
     paginate_by = 100  # if pagination is desired
-    ordering = ['first_sub__movie_name']
+    #ordering = ['first_sub__movie_name']
+    ordering = ['-id']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

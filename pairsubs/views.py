@@ -10,9 +10,11 @@ import re
 
 from . import pairsubs
 from .forms import SubSearchForm
+from .forms import AlignFormSet
 from .models import PairOfSubs
 from .models import get_subtitles, create_subs
 from .models import get_subtitles_for_alignment
+from .models import set_alignment_data
 from .tasks import download_sub
 
 def home(request):
@@ -106,8 +108,21 @@ def check_task(request):
 
 
 def subpair_align(request, id):
-    subs = get_subtitles_for_alignment(id)
-    return render(request, 'pairsubs/align.html', {'id': id, 'subs': subs})
+    if request.method == 'POST':
+        subs = get_subtitles_for_alignment(id)
+        formset = AlignFormSet(request.POST, form_kwargs={'subs': subs})
+        #import ipdb; ipdb.set_trace()
+        if formset.is_valid():
+            set_alignment_data(id, formset.cleaned_data)
+            return HttpResponseRedirect(reverse('pairsubs:subpair_show')+'?id={}'.format(id))
+        else:
+            status.update({'error_message': 'error'})
+
+    else: # GET
+        subs = get_subtitles_for_alignment(id)
+        formset = AlignFormSet(form_kwargs={'subs': subs})
+
+    return render(request, 'pairsubs/align.html', {'form': formset, 'sub_id': id})
 
 
 

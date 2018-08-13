@@ -110,6 +110,8 @@ def get_subtitles(sub_id, offset, length):
 
         end = start + length
 
+        import ipdb; ipdb.set_trace()
+
         subs = []
         for sub in subs_pair.first_sub, subs_pair.second_sub:
             elements = sub.subelement_set.filter(start__lte=end,
@@ -139,7 +141,8 @@ def get_subtitles_for_alignment(sub_id):
         subs.append([(e.num, e.text) for e in elements])
 
     sub_info = {'name':'Name'}
-    return {'sub_info': sub_info, 'subs': subs}
+    return subs
+    #return {'sub_info': sub_info, 'subs': subs}
 
 def get_random_pairofsubs():
     max_id = PairOfSubs.objects.all().aggregate(max_id=Max("id"))['max_id']
@@ -149,4 +152,18 @@ def get_random_pairofsubs():
             ps = PairOfSubs.objects.filter(pk=pk).first()
             if ps:
                 return ps
+
+def set_alignment_data(sub_id, data):
+    ps = PairOfSubs.objects.get(pk=sub_id)
+    if ps:
+        fs = ps.first_sub.subelement_set.get(num=int(data[0]['subs_choice']))
+        fe = ps.first_sub.subelement_set.get(num=int(data[1]['subs_choice']))
+        ss = ps.second_sub.subelement_set.get(num=int(data[2]['subs_choice']))
+        se = ps.second_sub.subelement_set.get(num=int(data[3]['subs_choice']))
+
+        ps.first_start = fs.start
+        ps.first_end = fe.start
+        ps.second_start = ss.start
+        ps.second_end = se.start
+        ps.save()
 

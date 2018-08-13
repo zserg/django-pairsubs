@@ -1,4 +1,6 @@
 from django import forms
+from django.forms import BaseFormSet
+from django.forms import formset_factory
 
 class SubSearchForm(forms.Form):
     w = forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'rus'})
@@ -23,3 +25,22 @@ class SubSearchForm(forms.Form):
            attrs={'class': 'form-control',
                   'placeholder': 'eng'}),
 	)
+
+
+class AlignForm(forms.Form):
+    def __init__(self, subs, index,  *args, **kwargs):
+        #import ipdb; ipdb.set_trace()
+        super(AlignForm, self).__init__(*args, **kwargs)
+        self.fields['subs_choice'] = forms.ChoiceField(choices=subs[index],
+                                            widget=forms.RadioSelect)
+
+class BaseAlignFormSet(BaseFormSet):
+    def get_form_kwargs(self, index):
+        kwargs = super().get_form_kwargs(index)
+        kwargs['index'] = index
+        return kwargs
+
+AlignFormSet = formset_factory(AlignForm, formset=BaseAlignFormSet, extra=4)
+
+
+

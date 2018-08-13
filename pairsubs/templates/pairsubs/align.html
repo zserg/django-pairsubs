@@ -4,19 +4,12 @@
 
 {% block content %}
 
-{{ subs }}
+<form action="{% url 'pairsubs:subpair_align' sub_id %}" method="post" name="align_sub" class="form">
+  {% csrf_token %}
 
-    <!-- <div class="row" style="position: absolute; bottom: 0px"> -->
-    <div class="row" id="text-row">
-      <div class="col-sm-6 " id="question" ></div>
-      <div class="col-sm-6 " id="answer" ></div>
-    </div>
+{{ form }}
 
-    <div class="row">
-       <div class="col-sm-12 text-center" id="result-row" >
-         <button type="button" class="btn btn-dark" id="answer-button">Show</button>
-       </div>
-    </div>
+  <button type="submit" class="btn btn-dark">Align</button>
 
 
 {% endblock %}

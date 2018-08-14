@@ -27,11 +27,15 @@ function get_data (){
 
 function new_text (data) {
     console.log('new_text');
+
+    $('#sub-info').html(data.data.sub_info.MovieName);
+    var sub_id = data.data.sub_info.sub_id.toString();
+    var href = $('#align-link').attr('href');
+    href = href.replace(/[0-9]*\/$/, sub_id+'/');
+    $('#align-link').attr('href', href);
+
     $('#answer').invisible();
     text = "";
-  console.log(data);
-  console.log(data.sub_info);
-  console.log(data.subs);
     for (let item of data.data.subs[0]) {
       text+=("<p>"+item+"</p>");
     }

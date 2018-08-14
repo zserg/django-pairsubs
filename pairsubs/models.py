@@ -106,19 +106,32 @@ def get_subtitles(sub_id, offset, length):
         if offset:
             start = offset
         else:
-            start = randrange(subs_pair.first_end)
+            #start = randrange(subs_pair.first_end)
+            start = randrange(100)
 
         end = start + length
 
-        import ipdb; ipdb.set_trace()
+
+        first_len = subs_pair.first_end - subs_pair.first_start
+        second_len = subs_pair.second_end - subs_pair.second_start
+        coeff = first_len/second_len
+        offset = first_len * start / 100
+
+        f_start = subs_pair.first_start + offset
+        f_end = f_start + length
+
+        s_start = subs_pair.second_start + offset/coeff
+        s_end = s_start + length/coeff
 
         subs = []
-        for sub in subs_pair.first_sub, subs_pair.second_sub:
-            elements = sub.subelement_set.filter(start__lte=end,
-                                                  end__gte=start).order_by('num')
+        for sub, params in zip([subs_pair.first_sub, subs_pair.second_sub],
+                [(f_start, f_end), (s_start, s_end)]):
+            elements = sub.subelement_set.filter(start__lte=params[1],
+                                                  end__gte=params[0]).order_by('num')
             subs.append([e.text for e in elements])
 
-        sub_info = {'name':'Name'}
+        sub_info = {'sub_id': subs_pair.id,
+                    'MovieName': subs_pair.first_sub.movie_name}
         return {'sub_info': sub_info, 'subs': subs}
     else:
         return None

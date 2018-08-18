@@ -3,6 +3,7 @@ import http.client
 import base64
 import zlib
 import srt
+from srt import SRTParseError
 from bs4 import UnicodeDammit
 import textwrap
 import itertools
@@ -230,7 +231,7 @@ class Subs:
         try:
             sub = list(srt.parse(data))
             return sub
-        except ValueError as e:
+        except (ValueError, SRTParseError) as e:
             print("Subtitles parsing failed: {}".format(e))
             return []
 
@@ -261,6 +262,7 @@ class SubPair:
     @classmethod
     def download(cls, imdbid, lang1, lang2, enc1=None, enc2=None):
         log = ""
+        print("Start subtitles download: {} ({}, {})".format(imdbid, lang1, lang2))
         state = "Login into Opensubtitles..."
         print(state)
         log += (state+"\n")

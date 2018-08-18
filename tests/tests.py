@@ -98,19 +98,14 @@ class ViewsTestCase(TestCase):
         lang2_input = soup.find('input', {'id': 'id_lang2'})
         self.assertIsNotNone(lang2_input)
 
-        url = reverse('pairsubs:opensubtitles_search')
-        response = self.client.post(url, {'imdb':'to_be_found', 'lang1':'rus', 'lang2':'eng'})
-        p = models.PairOfSubs.objects.get()
-        self.assertRedirects(response, reverse('pairsubs:subpair_info', args=(p.pk,)),
-                status_code=302, target_status_code=200)
 
-
-    @patch.object(pairsubs.SubPair, 'download', mock_pair_sub)
-    def test_search_form_not_found(self):
-        url = reverse('pairsubs:opensubtitles_search')
-        response = self.client.post(url, {'imdb':'to_be_not_found', 'lang1':'rus', 'lang2':'eng'})
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['not_found'], True)
+    # @patch.object(pairsubs.SubPair, 'download', mock_pair_sub)
+    # def test_search_form_not_found(self):
+    #     url = reverse('pairsubs:opensubtitles_search')
+    #     response = self.client.post(url, {'imdb':'to_be_not_found', 'lang1':'rus', 'lang2':'eng'})
+    #     import ipdb; ipdb.set_trace()
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertEqual(response.context['not_found'], True)
 
     def test_subpair_show(self):
         pair = mock_pair_sub('to_be_found', 'rus', 'eng')
@@ -129,7 +124,6 @@ class ViewsTestCase(TestCase):
 
         response = self.client.get(reverse('pairsubs:subpair-list'))
         self.assertEqual(200, response.status_code)
-        #import ipdb; ipdb.set_trace()
 
         self.assertEqual(response.context['object_list'][0].first_sub.movie_name, 'Name_1234')
 
@@ -139,7 +133,7 @@ class ViewsTestCase(TestCase):
 
         url = reverse('pairsubs:opensubtitles_search')
         response = self.client.post(url, {'imdb':'1234', 'lang1':'rus', 'lang2':'eng'})
-        self.assertEqual(response.context['already_exists'], True)
+        self.assertIsNotNone(response.context['error_message'])
 
     def test_subpair_info(self):
         pair = mock_pair_sub('to_be_found', 'rus', 'eng')
@@ -169,7 +163,7 @@ class ViewsTestCase(TestCase):
 
     #     self.assertEqual(response.context['subtitles'], None)
 
-    @patch('pairsubs.models.randrange', return_value=12000)
+    @patch('pairsubs.models.randrange', return_value=10)
     def test_get_subtitles_data(self, mock_randrange):
         pair = mock_pair_sub('to_be_found', 'rus', 'eng')
         sub_pair = models.create_subs(pair)
@@ -182,6 +176,6 @@ class ViewsTestCase(TestCase):
         self.assertIsNotNone(text['data'])
         self.assertIsNotNone(text['data']['sub_info'])
         self.assertIsNotNone(text['data']['subs'])
-        self.assertEqual(len(text['data']['subs'][0]), 4)
+        self.assertEqual(len(text['data']['subs'][0]), 3)
 
 

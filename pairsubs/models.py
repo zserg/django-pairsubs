@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models import Max
 
+
 from random import randrange, randint
 
 DEFAULT_LENGTH = 30000
@@ -93,6 +94,7 @@ def get_subtitles(sub_id, offset, length):
         offset (int): start time of subtitles (milliseconds)
         length (int): diration of a set of subtitles
     '''
+    #import ipdb; ipdb.set_trace()
 
     if sub_id:
         subs_pair = PairOfSubs.objects.get(pk=sub_id)

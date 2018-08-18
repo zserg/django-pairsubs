@@ -99,8 +99,7 @@ def check_task(request):
     result = AsyncResult(request.POST['task_id'])
     status = result.status
     result = result.result
-    print(status)
-    print(result)
+    print("Result:{}, Status:{}".format(result,status))
     return HttpResponse(json.dumps({
 	'status': status,
         'result': result

@@ -1,6 +1,5 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
 from django.urls import reverse
 from django.views.generic.list import ListView
@@ -8,21 +7,22 @@ from celery.result import AsyncResult
 import json
 import re
 
-from . import pairsubs
 from .forms import SubSearchForm
 from .forms import AlignFormSet
 from .models import PairOfSubs
-from .models import get_subtitles, create_subs
+from .models import get_subtitles
 from .models import get_subtitles_for_alignment
 from .models import set_alignment_data
 from .tasks import download_sub
 
+
 def home(request):
     return render(request, "pairsubs/home.html")
 
+
 @require_http_methods(["GET", "POST"])
 def opensubtitles_search(request):
-    #import ipdb; ipdb.set_trace()
+    # import ipdb; ipdb.set_trace()
     status = {}
     if request.method == 'POST':
         form = SubSearchForm(request.POST)
@@ -32,26 +32,28 @@ def opensubtitles_search(request):
                 imdb = imdb_r[0].lstrip('0')
                 lang1 = form.cleaned_data['lang1']
                 lang2 = form.cleaned_data['lang2']
-                sp = PairOfSubs.objects.filter(id_movie_imdb = imdb,
-                                         first_lang = lang1,
-                                         second_lang = lang2)
-                if not sp: # check if not exists already
+                sp = PairOfSubs.objects.filter(id_movie_imdb=imdb,
+                                               first_lang=lang1,
+                                               second_lang=lang2)
+                if not sp:  # check if not exists already
                     result = download_sub.delay(imdb, lang1, lang2)
-                    print(result.task_id)
-                    #import ipdb; ipdb.set_trace()
-                    return HttpResponseRedirect(reverse('pairsubs:status')+'?id={}'.format(result.task_id))
+                    return HttpResponseRedirect(
+                            reverse('pairsubs:status')+'?id={}'.format(result.task_id)
+                            )
                 else:
                     status.update({'error_message':
                         "Subtitles IMDB {} are already exiist in database".format(imdb)})
 
-    else: # GET
+    else:  # GET
         form = SubSearchForm()
 
     status.update({'form': form})
     return render(request, "pairsubs/search.html", status)
 
+
 def opensubtitles_download(request):
     return HttpResponse("ToDo")
+
 
 def subpair_info(request, id):
     subs_pair = PairOfSubs.objects.get(pk=id)
@@ -64,16 +66,19 @@ def subpair_info(request, id):
 
     return render(request, 'pairsubs/sub_info.html', {'sub_info': info})
 
+
 def status(request):
     task_id = request.GET.get('id', None)
     return render(request, 'pairsubs/status.html', {'status': task_id})
+
 
 def subpair_show(request):
     sub_id = request.GET.get('id', None)
     return render(request, 'pairsubs/show.html', {'id': sub_id})
 
+
 def get_subtitles_data(request):
-    #import ipdb; ipdb.set_trace()
+    # import ipdb; ipdb.set_trace()
     sub_id = request.GET.get('id', None)
     if sub_id:
         sub_id = int(sub_id)
@@ -81,48 +86,46 @@ def get_subtitles_data(request):
     offset = int(request.GET.get('offset', '0'))
     length = int(request.GET.get('length', '0'))
     subtitles = get_subtitles(sub_id, offset, length)
-    return JsonResponse({'data':subtitles})
+    return JsonResponse({'data': subtitles})
 
 
 class SubPairListView(ListView):
 
     model = PairOfSubs
     paginate_by = 100  # if pagination is desired
-    #ordering = ['first_sub__movie_name']
     ordering = ['-id']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
 
+
 def check_task(request):
     result = AsyncResult(request.POST['task_id'])
     status = result.status
     result = result.result
-    print("Result:{}, Status:{}".format(result,status))
-    return HttpResponse(json.dumps({
-	'status': status,
-        'result': result
-    }), content_type='application/json')
+    return HttpResponse(
+            json.dumps({'status': status,
+                        'result': result}
+                      ), content_type='application/json')
 
 
 def subpair_align(request, id):
     if request.method == 'POST':
         subs = get_subtitles_for_alignment(id)
         formset = AlignFormSet(request.POST, form_kwargs={'subs': subs})
-        #import ipdb; ipdb.set_trace()
+        # import ipdb; ipdb.set_trace()
         if formset.is_valid():
             set_alignment_data(id, formset.cleaned_data)
-            return HttpResponseRedirect(reverse('pairsubs:subpair_show')+'?id={}'.format(id))
+            return HttpResponseRedirect(
+                    reverse('pairsubs:subpair_show')+'?id={}'.format(id))
         else:
             status.update({'error_message': 'error'})
 
-    else: # GET
+    else:  # GET
         subs = get_subtitles_for_alignment(id)
         formset = AlignFormSet(form_kwargs={'subs': subs})
 
-    return render(request, 'pairsubs/align.html', {'form': formset, 'sub_id': id})
-
-
-
-
+    return render(request,
+                  'pairsubs/align.html',
+                  {'form': formset, 'sub_id': id})

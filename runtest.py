@@ -35,44 +35,44 @@ def runtests(test_path='tests'):
         # Configure test environment
         settings.configure(
             DATABASES=DATABASES,
-	    DEBUG=True,
+            DEBUG=True,
             INSTALLED_APPS=(
-		'django.contrib.admin',
-		'django.contrib.auth',
-		'django.contrib.contenttypes',
-		'django.contrib.sessions',
-		'django.contrib.messages',
-		'django.contrib.staticfiles',
-		'pairsubs',
-		'bootstrap4',
+                'django.contrib.admin',
+                'django.contrib.auth',
+                'django.contrib.contenttypes',
+                'django.contrib.sessions',
+                'django.contrib.messages',
+                'django.contrib.staticfiles',
+                'pairsubs',
+                'bootstrap4',
             ),
             ROOT_URLCONF='tests.urls',
             LANGUAGES=(
                 ('en', 'English'),
             ),
             MIDDLEWARE_CLASSES=(
-	    'django.middleware.security.SecurityMiddleware',
-	    'django.contrib.sessions.middleware.SessionMiddleware',
-	    'django.middleware.common.CommonMiddleware',
-	    'django.middleware.csrf.CsrfViewMiddleware',
-	    'django.contrib.auth.middleware.AuthenticationMiddleware',
-	    'django.contrib.messages.middleware.MessageMiddleware',
-	    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-        ),
-	TEMPLATES = [
-	    {
-		'BACKEND': 'django.template.backends.django.DjangoTemplates',
-		'DIRS': ['./example/templates/'],
-		'APP_DIRS': True,
-		'OPTIONS': {
-		    'context_processors': [
-			'django.template.context_processors.debug',
-			'django.template.context_processors.request',
-			'django.contrib.auth.context_processors.auth',
-			'django.contrib.messages.context_processors.messages',
-		    ],
-		},
-	    },
+            'django.middleware.security.SecurityMiddleware',
+            'django.contrib.sessions.middleware.SessionMiddleware',
+            'django.middleware.common.CommonMiddleware',
+            'django.middleware.csrf.CsrfViewMiddleware',
+            'django.contrib.auth.middleware.AuthenticationMiddleware',
+            'django.contrib.messages.middleware.MessageMiddleware',
+            'django.middleware.clickjacking.XFrameOptionsMiddleware',
+            ),
+             TEMPLATES = [
+                {
+                'BACKEND': 'django.template.backends.django.DjangoTemplates',
+                'DIRS': ['./example/templates/'],
+                'APP_DIRS': True,
+                'OPTIONS': {
+                    'context_processors': [
+                    'django.template.context_processors.debug',
+                    'django.template.context_processors.request',
+                    'django.contrib.auth.context_processors.auth',
+                    'django.contrib.messages.context_processors.messages',
+                    ],
+                },
+                },
 ],
 STATIC_URL = '/static/',
 )

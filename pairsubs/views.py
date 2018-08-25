@@ -15,6 +15,10 @@ from .models import get_subtitles_for_alignment
 from .models import set_alignment_data
 from .tasks import download_sub
 
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def home(request):
     return render(request, "pairsubs/home.html")
@@ -22,6 +26,8 @@ def home(request):
 
 @require_http_methods(["GET", "POST"])
 def opensubtitles_search(request):
+    logger.info(request)
+
     # import ipdb; ipdb.set_trace()
     status = {}
     if request.method == 'POST':
@@ -36,6 +42,8 @@ def opensubtitles_search(request):
                                                first_lang=lang1,
                                                second_lang=lang2)
                 if not sp:  # check if not exists already
+                    logger.info('Start download...')
+                    #import ipdb; ipdb.set_trace()
                     result = download_sub.delay(imdb, lang1, lang2)
                     return HttpResponseRedirect(
                             reverse('pairsubs:status')+'?id={}'.format(result.task_id)

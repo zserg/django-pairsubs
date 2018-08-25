@@ -48,8 +48,12 @@ var check_data = function() {
     success:
       function(data, status){
 	  console.log("Data: " + data.status + "\nStatus: " + status);
-          if (data.status == "SUCCESS"){
-            show_status(data.result);
+          if (data.hasOwnProperty('status') && data.hasOwnProperty('result')){
+            if (data.status == "SUCCESS"){
+              show_status(data.result);
+            }
+          }else { // wrong response received
+            wrong_resp();
           }
       }
   });
@@ -75,4 +79,12 @@ var show_status = function(result) {
     $("#search-link").show();
   };
 };
+
+var wrong_resp = function() {
+  $("#loader").hide();
+  clearInterval(timerId);
+  $("div.status-info").show();
+};
+
+
 

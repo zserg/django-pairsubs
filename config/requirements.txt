@@ -1,0 +1,7 @@
+Django
+gunicorn
+psycopg2
+srt
+celery
+bs4
+redis

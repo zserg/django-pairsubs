@@ -7,22 +7,37 @@
 var sub_id = {{ id }};
 </script>
 {% endif %}
-    <div id="sub-info"></div>
-    <a id="align-link" class="btn btn-dark"  href="{% url 'pairsubs:subpair_align' 0 %}">Align</a>
+<div class="container main-container">
+    <div class="row subs-title">
+      <div class="col-sm-11">
+        <p class="lead" id="sub-info"></p>
+      </div>
+      <div class="col-sm-1">
+        <a id="align-link" class="btn btn-outline-secondary" href="{% url 'pairsubs:subpair_align' 0 %}">Align</a>
+      </div>
+    </div>
+    <hr>
 
-    <!-- <div class="row" style="position: absolute; bottom: 0px"> -->
     <div class="row" id="text-row">
-      <div class="col-sm-6 " id="question" ></div>
-      <div class="col-sm-6 " id="answer" ></div>
+	<div class="col content">
+          <div class="d-flex">
+            <div class="subs-text" id="question"></div>
+            <div class="subs-text" id="answer"></div>
+          </div>
+      </div>
     </div>
 
-    <div class="row">
-       <div class="col-sm-12 text-center" id="result-row" >
+</div>
+</div>
+</div>
+
+
+<footer class="footer">
+      <div class="container">
          <button type="button" class="btn btn-dark" id="answer-button">Show</button>
-       </div>
-    </div>
-
-
+        <!-- <span class="text-muted">Place sticky footer content here.</span> -->
+      </div>
+    </footer>
 {% endblock %}
 
 {% block javascript %}

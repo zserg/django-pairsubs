@@ -1,4 +1,16 @@
+<!doctype html>
 <head>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+<!-- {% load static %} -->
+<link rel="stylesheet" href="{% static "pairsubs/pairsubs.css" %}">
+
 <style>
 #loader {
     border: 16px solid #f3f3f3; /* Light grey */
@@ -17,12 +29,8 @@
 </style>
 </head>
 
-{% load bootstrap4 %}
-
-{# Load CSS and JavaScript #}
-{% bootstrap_css %}
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-md navbar-dark bg-dark">
     <a class="navbar-brand" href="{% url 'pairsubs:home' %}">PairSubs</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
        <span class="navbar-toggler-icon"></span>
@@ -30,7 +38,7 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'pairsubs:subpair_show' %}">Learn !</a>
+            <a class="nav-link" href="{% url 'pairsubs:subpair_show' %}">Learn</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{% url 'pairsubs:subpair-list' %}">List</a>
@@ -38,16 +46,17 @@
           <li class="nav-item">
             <a class="nav-link" href="{% url 'pairsubs:opensubtitles_search' %}">Search</a>
           </li>
+	</ul>
      </div>
 </nav>
 
-{% block bootstrap4_title %}{% block title %}{% endblock %}{% endblock %}
+{% block title %}{% endblock %}
 
 
-<div class="container">
 {% block content %}{% endblock %}
-</div>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 {% block javascript %} {% endblock %}
 </body>
 

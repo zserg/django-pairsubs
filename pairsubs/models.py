@@ -149,15 +149,15 @@ def get_subtitles_for_alignment(sub_id):
     Args:
         sub_id (int): PairOfSubs id
     '''
-
+    SUBS_FOR_ALIGNMENT = 6
     subs_pair = PairOfSubs.objects.get(pk=sub_id)
     subs = []
     for sub in subs_pair.first_sub, subs_pair.second_sub:
-        elements = sub.subelement_set.all().order_by('num')[0:4]
+        elements = sub.subelement_set.all().order_by('num')[0:SUBS_FOR_ALIGNMENT]
         subs.append([(e.num, e.text) for e in elements])
         els = sub.subelement_set.all().order_by('num')
         max = len(els)
-        elements = els[max-4:max]
+        elements = els[max-SUBS_FOR_ALIGNMENT:max]
         subs.append([(e.num, e.text) for e in elements])
 
     # sub_info = {'name':'Name'}
@@ -177,11 +177,12 @@ def get_random_pairofsubs():
 
 def set_alignment_data(sub_id, data):
     ps = PairOfSubs.objects.get(pk=sub_id)
+    #import ipdb; ipdb.set_trace()
     if ps:
-        fs = ps.first_sub.subelement_set.get(num=int(data[0]['subs_choice']))
-        fe = ps.first_sub.subelement_set.get(num=int(data[1]['subs_choice']))
-        ss = ps.second_sub.subelement_set.get(num=int(data[2]['subs_choice']))
-        se = ps.second_sub.subelement_set.get(num=int(data[3]['subs_choice']))
+        fs = ps.first_sub.subelement_set.filter(num=int(data[0]['subs_choice']))[0]
+        fe = ps.first_sub.subelement_set.filter(num=int(data[1]['subs_choice']))[0]
+        ss = ps.second_sub.subelement_set.filter(num=int(data[2]['subs_choice']))[0]
+        se = ps.second_sub.subelement_set.filter(num=int(data[3]['subs_choice']))[0]
 
         ps.first_start = fs.start
         ps.first_end = fe.start

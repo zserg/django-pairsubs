@@ -3,7 +3,7 @@ from django.db.models import Max
 
 from random import randint, randrange
 
-DEFAULT_LENGTH = 30000
+DEFAULT_LENGTH = 20000
 
 
 class Subs(models.Model):

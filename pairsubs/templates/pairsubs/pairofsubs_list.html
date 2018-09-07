@@ -8,8 +8,8 @@
           {% for subpair in object_list %}
 
           <li>
-            <a href="{% url 'pairsubs:subpair_info' subpair.id %}">{{ subpair.first_sub.movie_name }}</a>
-            <a href="{% url 'pairsubs:subpair_show' %}?id={{ subpair.id }}" class="badge badge-light">Show</a>
+            <!-- <a href="{% url 'pairsubs:subpair_info' subpair.id %}">{{ subpair.first_sub.movie_name }}</a> -->
+            <a href="{% url 'pairsubs:subpair_show' %}?id={{ subpair.id }}">{{ subpair.first_sub.movie_name }}</a>
             <button type=" button" class="badge btn btn-danger" onclick="sub_delete({{ subpair.id }})">Delete</button>
           </li>
           {% empty %}

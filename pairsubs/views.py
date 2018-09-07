@@ -137,3 +137,9 @@ def subpair_align(request, id):
     return render(request,
                   'pairsubs/align.html',
                   {'form': formset, 'sub_id': id})
+
+
+def subpair_delete(request, id):
+    if request.method == 'DELETE':
+        PairOfSubs.objects.filter(pk=id).delete()
+    return HttpResponse(json.dumps({'status': 'SUCCESS'}))

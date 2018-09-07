@@ -6,6 +6,7 @@ app_name = 'pairsubs'
 urlpatterns = [
     path('', views.home, name='home'),
     path('list/', views.SubPairListView.as_view(), name='subpair-list'),
+    path('list/delete/<int:id>/', views.subpair_delete, name='subpair_delete'),
     path('search/', views.opensubtitles_search, name='opensubtitles_search'),
     path('status/', views.status, name='status'),
     path('status/check/', views.check_task, name='check-task'),

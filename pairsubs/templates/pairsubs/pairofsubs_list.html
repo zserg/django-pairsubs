@@ -1,17 +1,31 @@
 {% extends "site_base.html" %}
 
 {% block content %}
-<h1>Subtitles</h1>
-<ul>
-  {% for subpair in object_list %}
-  <li><a href="{% url 'pairsubs:subpair_info' subpair.id %}">{{ subpair.first_sub.movie_name }}</a></li>
-  {% empty %}
-      <li>No articles yet.</li>
-  {% endfor %}
-</ul>
+<div class="container">
+    <div class="row">
+      <div class="col">
+        <ul>
+          {% for subpair in object_list %}
+
+          <li>
+            <a href="{% url 'pairsubs:subpair_info' subpair.id %}">{{ subpair.first_sub.movie_name }}</a>
+            <a href="{% url 'pairsubs:subpair_show' %}?id={{ subpair.id }}" class="badge badge-light">Show</a>
+            <button type=" button" class="badge btn btn-danger" onclick="sub_delete({{ subpair.id }})">Delete</button>
+          </li>
+          {% empty %}
+              <li>No subtitles yet.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
 
 {% endblock %}
 
+{% load static %}
+{% block javascript %}
+<script src="{% static "pairsubs/list_task.js" %}"></script>
+{% endblock %}
 
 
 

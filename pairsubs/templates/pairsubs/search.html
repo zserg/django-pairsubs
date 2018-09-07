@@ -1,6 +1,9 @@
 {% extends "site_base.html" %}
 
 {% block content %}
+<div class="container">
+    <div class="row">
+      <div class="col">
 <h1>Search Opensubtitles.org</h1>
 
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
@@ -20,5 +23,8 @@
 
   <button type="submit" class="btn btn-dark">Search</button>
   </form>
+      </div>
+      </div>
+      </div>
 
 {% endblock %}

@@ -21,7 +21,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def home(request):
-    return render(request, "pairsubs/home.html")
+    return HttpResponseRedirect(
+            reverse('pairsubs:pairshow'))
 
 
 @require_http_methods(["GET", "POST"])

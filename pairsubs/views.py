@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 def home(request):
     return HttpResponseRedirect(
-            reverse('pairsubs:pairshow'))
+            reverse('pairsubs:subpair_show'))
 
 
 @require_http_methods(["GET", "POST"])

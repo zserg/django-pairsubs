@@ -160,6 +160,7 @@ def get_subtitles_for_alignment(sub_id):
         elements = els[max-SUBS_FOR_ALIGNMENT:max]
         subs.append([(e.num, e.text) for e in elements])
 
+    subs[1:2] = [subs[2],subs[1]]
     # sub_info = {'name':'Name'}
     return subs
     # return {'sub_info': sub_info, 'subs': subs}

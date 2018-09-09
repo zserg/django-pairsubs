@@ -6,7 +6,23 @@
 <form action="{% url 'pairsubs:subpair_align' sub_id %}" method="post" name="align_sub" class="form">
   {% csrf_token %}
 
-{{ form }}
+
+  {% for form in formset %}
+    {% if forloop.counter == 1 or forloop.counter == 3 %}
+      <div class="row">
+    {% endif %}
+
+       <div class="col">
+         <ul>
+         {{ form.as_ul }}
+         </ul>
+       </div>
+
+    {% if forloop.counter == 2 or forloop.counter == 4 %}
+      </div>
+    {% endif %}
+  {% endfor %}
+
 
   <button type="submit" class="btn btn-dark">Align</button>
 

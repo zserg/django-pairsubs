@@ -137,7 +137,7 @@ def subpair_align(request, id):
 
     return render(request,
                   'pairsubs/align.html',
-                  {'form': formset, 'sub_id': id})
+                  {'formset': formset, 'sub_id': id})
 
 
 def subpair_delete(request, id):

@@ -2,30 +2,54 @@
 {% load static %}
 
 {% block content %}
+<div class="container">
 
 <form action="{% url 'pairsubs:subpair_align' sub_id %}" method="post" name="align_sub" class="form">
   {% csrf_token %}
 
+  <!-- {{ formset }} -->
 
+
+  {{ formset.management_form }}
   {% for form in formset %}
     {% if forloop.counter == 1 or forloop.counter == 3 %}
-      <div class="row">
+      <div class="row d-block">
+
+        {% if forloop.counter == 1%}
+          <p class="lead">Begin</p>
+          <hr>
+        {% else %}
+          <p class="lead">End</p>
+          <hr>
+        {% endif %}
+
+         <div class="col content">
+          <div class="d-flex">
     {% endif %}
 
-       <div class="col">
-         <ul>
-         {{ form.as_ul }}
-         </ul>
-       </div>
+        <div class="align-text">
+           {% for radio in form.subs_choice %}
+           <p>
+              <label for="{{ radio.id_for_label }}">
+                <span class="radio">{{ radio.tag }}</span>
+                      {{ radio.choice_label }}
+              </label>
+           </p>
+           {% endfor %}
+
+        </div>
+    <hr>
 
     {% if forloop.counter == 2 or forloop.counter == 4 %}
+       </div>
+       </div>
       </div>
     {% endif %}
   {% endfor %}
 
 
   <button type="submit" class="btn btn-dark">Align</button>
-
+</div>
 
 {% endblock %}
 

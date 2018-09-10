@@ -121,9 +121,9 @@ def check_task(request):
 
 def subpair_align(request, id):
     if request.method == 'POST':
+        # import ipdb; ipdb.set_trace()
         subs = get_subtitles_for_alignment(id)
         formset = AlignFormSet(request.POST, form_kwargs={'subs': subs})
-        # import ipdb; ipdb.set_trace()
         if formset.is_valid():
             set_alignment_data(id, formset.cleaned_data)
             return HttpResponseRedirect(

@@ -160,7 +160,8 @@ def get_subtitles_for_alignment(sub_id):
         elements = els[max-SUBS_FOR_ALIGNMENT:max]
         subs.append([(e.num, e.text) for e in elements])
 
-    subs[1:2] = [subs[2],subs[1]]
+    # import pdb; pdb.set_trace()
+    subs[1:3] = [subs[2],subs[1]]
     # sub_info = {'name':'Name'}
     return subs
     # return {'sub_info': sub_info, 'subs': subs}
@@ -181,8 +182,8 @@ def set_alignment_data(sub_id, data):
     #import ipdb; ipdb.set_trace()
     if ps:
         fs = ps.first_sub.subelement_set.filter(num=int(data[0]['subs_choice']))[0]
-        fe = ps.first_sub.subelement_set.filter(num=int(data[1]['subs_choice']))[0]
-        ss = ps.second_sub.subelement_set.filter(num=int(data[2]['subs_choice']))[0]
+        fe = ps.first_sub.subelement_set.filter(num=int(data[2]['subs_choice']))[0]
+        ss = ps.second_sub.subelement_set.filter(num=int(data[1]['subs_choice']))[0]
         se = ps.second_sub.subelement_set.filter(num=int(data[3]['subs_choice']))[0]
 
         ps.first_start = fs.start

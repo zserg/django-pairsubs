@@ -3,10 +3,11 @@
   height: 100%;
 }
 
-.subs-text {
+.subs-text, .align-text {
   flex-shrink: 0;
   width: 300px;
 }
+
 
 .subs-title {
   justify-content: space-between;

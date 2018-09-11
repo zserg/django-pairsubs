@@ -7,8 +7,6 @@
 <form action="{% url 'pairsubs:subpair_align' sub_id %}" method="post" name="align_sub" class="form">
   {% csrf_token %}
 
-  <!-- {{ formset }} -->
-
 
   {{ formset.management_form }}
   {% for form in formset %}

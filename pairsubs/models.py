@@ -161,7 +161,7 @@ def get_subtitles_for_alignment(sub_id):
         subs.append([(e.num, e.text) for e in elements])
 
     # import pdb; pdb.set_trace()
-    subs[1:3] = [subs[2],subs[1]]
+    subs[1:3] = [subs[2], subs[1]]
     # sub_info = {'name':'Name'}
     return subs
     # return {'sub_info': sub_info, 'subs': subs}
@@ -179,7 +179,7 @@ def get_random_pairofsubs():
 
 def set_alignment_data(sub_id, data):
     ps = PairOfSubs.objects.get(pk=sub_id)
-    #import ipdb; ipdb.set_trace()
+    # import ipdb; ipdb.set_trace()
     if ps:
         fs = ps.first_sub.subelement_set.filter(num=int(data[0]['subs_choice']))[0]
         fe = ps.first_sub.subelement_set.filter(num=int(data[2]['subs_choice']))[0]

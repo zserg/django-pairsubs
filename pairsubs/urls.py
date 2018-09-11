@@ -16,4 +16,3 @@ urlpatterns = [
     path('align/<int:id>/', views.subpair_align, name='subpair_align'),
 
 ]
-

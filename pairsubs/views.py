@@ -20,6 +20,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 def home(request):
     return HttpResponseRedirect(
             reverse('pairsubs:subpair_show'))
@@ -44,14 +45,14 @@ def opensubtitles_search(request):
                                                second_lang=lang2)
                 if not sp:  # check if not exists already
                     logger.info('Start download...')
-                    #import ipdb; ipdb.set_trace()
+                    # import ipdb; ipdb.set_trace()
                     result = download_sub.delay(imdb, lang1, lang2)
                     return HttpResponseRedirect(
                             reverse('pairsubs:status')+'?id={}'.format(result.task_id)
                             )
                 else:
                     status.update({'error_message':
-                        "Subtitles IMDB {} are already exiist in database".format(imdb)})
+                                   "Subtitles IMDB {} are already exiist in database".format(imdb)})
 
     else:  # GET
         form = SubSearchForm()
@@ -116,7 +117,7 @@ def check_task(request):
     return HttpResponse(
             json.dumps({'status': status,
                         'result': result}
-                      ), content_type='application/json')
+                       ), content_type='application/json')
 
 
 def subpair_align(request, id):

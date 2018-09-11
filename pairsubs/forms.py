@@ -33,7 +33,7 @@ class AlignForm(forms.Form):
     def __init__(self, subs, index,  *args, **kwargs):
         super(AlignForm, self).__init__(*args, **kwargs)
         self.fields['subs_choice'] = forms.ChoiceField(choices=subs[index],
-                                                     widget=forms.RadioSelect)
+                                                       widget=forms.RadioSelect)
 
 
 class BaseAlignFormSet(BaseFormSet):

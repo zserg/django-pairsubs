@@ -17,13 +17,14 @@ from .tasks import download_sub
 
 import logging
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger(__name__)
 
 
 def home(request):
     return HttpResponseRedirect(
-            reverse('pairsubs:subpair_show'))
+        reverse('pairsubs:subpair_show')
+        )
 
 
 @require_http_methods(["GET", "POST"])
@@ -35,7 +36,7 @@ def opensubtitles_search(request):
     if request.method == 'POST':
         form = SubSearchForm(request.POST)
         if form.is_valid():
-            imdb_r = re.search('\d+', form.cleaned_data['imdb'])
+            imdb_r = re.search(r'\d+', form.cleaned_data['imdb'])
             if imdb_r:
                 imdb = imdb_r[0].lstrip('0')
                 lang1 = form.cleaned_data['lang1']
@@ -45,14 +46,14 @@ def opensubtitles_search(request):
                                                second_lang=lang2)
                 if not sp:  # check if not exists already
                     logger.info('Start download...')
-                    # import ipdb; ipdb.set_trace()
                     result = download_sub.delay(imdb, lang1, lang2)
                     return HttpResponseRedirect(
-                            reverse('pairsubs:status')+'?id={}'.format(result.task_id)
-                            )
+                        reverse('pairsubs:status')+'?id={}'.format(result.task_id)
+                        )
                 else:
-                    status.update({'error_message':
-                                   "Subtitles IMDB {} are already exiist in database".format(imdb)})
+                    status.update(
+                        {'error_message':
+                         'Subtitles IMDB {} are already exiist in database'.format(imdb)})
 
     else:  # GET
         form = SubSearchForm()

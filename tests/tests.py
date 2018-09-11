@@ -12,12 +12,13 @@ from datetime import timedelta
 from pairsubs import pairsubs
 from pairsubs import models
 
+
 def generate_sub(imdb, lang):
     sub_count = 10
     sub_info = {
-        'MovieName':'Name_{}'.format(imdb),
-        'SubEncoding':'utf-8',
-        'SubFileName':'File_{}'.format(imdb),
+        'MovieName': 'Name_{}'.format(imdb),
+        'SubEncoding': 'utf-8',
+        'SubFileName': 'File_{}'.format(imdb),
         'SubLanguageID': lang,
         'IDMovieImdb': imdb,
         'IDSubtitleFile': 10
@@ -35,6 +36,7 @@ def generate_sub(imdb, lang):
 
     return pairsubs.Subs(sub_s.encode('utf-8'), sub_info)
 
+
 def mock_pair_sub(imdb, lang1, lang2):
     if imdb == 'to_be_not_found':
         return None
@@ -43,6 +45,7 @@ def mock_pair_sub(imdb, lang1, lang2):
                 generate_sub(imdb, lang2)
                 ]
         return pairsubs.SubPair(subs)
+
 
 class SubTestCase(TestCase):
 
@@ -59,7 +62,6 @@ class SubTestCase(TestCase):
         self.assertEqual(sub_pair.second_lang, 'eng')
 
 
-
 class ViewsTestCase(TestCase):
 
     def SetUp(self):
@@ -67,22 +69,14 @@ class ViewsTestCase(TestCase):
 
     def test_home(self):
         response = self.client.get(reverse('pairsubs:home'))
-        self.assertEqual(200, response.status_code)
-
-        soup = BeautifulSoup(response.content, 'html.parser')
-        hrefs = [x['href'] for x in soup.find_all('a', href=True)]
-
-        self.assertIn(reverse('pairsubs:opensubtitles_search'), hrefs)
-        self.assertIn(reverse('pairsubs:subpair_show'), hrefs)
-        self.assertIn(reverse('pairsubs:subpair-list'), hrefs)
-
+        self.assertRedirects(response, reverse('pairsubs:subpair_show'))
 
     @patch.object(pairsubs.SubPair, 'download', mock_pair_sub)
     def test_search_form(self):
         response = self.client.get(reverse('pairsubs:opensubtitles_search'))
         self.assertEqual(200, response.status_code)
 
-        #import ipdb; ipdb.set_trace()
+        # import ipdb; ipdb.set_trace()
         soup = BeautifulSoup(response.content, 'html.parser')
         search_form = soup.find('form', {
             'name': 'search_subs',
@@ -98,25 +92,17 @@ class ViewsTestCase(TestCase):
         lang2_input = soup.find('input', {'id': 'id_lang2'})
         self.assertIsNotNone(lang2_input)
 
-
-    # @patch.object(pairsubs.SubPair, 'download', mock_pair_sub)
-    # def test_search_form_not_found(self):
-    #     url = reverse('pairsubs:opensubtitles_search')
-    #     response = self.client.post(url, {'imdb':'to_be_not_found', 'lang1':'rus', 'lang2':'eng'})
-    #     import ipdb; ipdb.set_trace()
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertEqual(response.context['not_found'], True)
-
     def test_subpair_show(self):
         pair = mock_pair_sub('to_be_found', 'rus', 'eng')
         sub_pair = models.create_subs(pair)
 
-        response = self.client.get(reverse('pairsubs:subpair_show'),
-                        {'id':sub_pair.id, 'offset':11000, 'length':30000})
+        response = self.client.get(
+            reverse('pairsubs:subpair_show'),
+            {'id': sub_pair.id, 'offset': 11000, 'length': 30000}
+            )
         self.assertEqual(200, response.status_code)
 
         self.assertIsNotNone(response.context['id'])
-
 
     def test_subpair_list(self):
         pair = mock_pair_sub('1234', 'rus', 'eng')
@@ -135,34 +121,6 @@ class ViewsTestCase(TestCase):
         response = self.client.post(url, {'imdb':'1234', 'lang1':'rus', 'lang2':'eng'})
         self.assertIsNotNone(response.context['error_message'])
 
-    def test_subpair_info(self):
-        pair = mock_pair_sub('to_be_found', 'rus', 'eng')
-        sub_pair = models.create_subs(pair)
-
-        response = self.client.get(reverse('pairsubs:subpair_info', args=(sub_pair.id,)))
-        self.assertEqual(200, response.status_code)
-
-        self.assertEqual(response.context['sub_info']['MovieName'], 'Name_to_be_found')
-        self.assertEqual(response.context['sub_info']['Languages'], ('rus', 'eng'))
-        self.assertEqual(response.context['sub_info']['IMDB'], 'to_be_found')
-        self.assertEqual(response.context['sub_info']['id'], sub_pair.id)
-
-        soup = BeautifulSoup(response.content, 'html.parser')
-        link = soup.findAll('a')
-        #import ipdb; ipdb.set_trace()
-
-        hrefs = [x['href'] for x in soup.find_all('a', href=True)]
-
-        self.assertIn(reverse('pairsubs:subpair_show')+'?id={}'.format(sub_pair.id), hrefs)
-        self.assertIn(reverse('pairsubs:subpair_show'), hrefs)
-
-
-    # def test_subpair_show_random_empty_base(self):
-    #     response = self.client.get(reverse('pairsubs:subpair_show'))
-    #     self.assertEqual(200, response.status_code)
-
-    #     self.assertEqual(response.context['subtitles'], None)
-
     @patch('pairsubs.models.randrange', return_value=10)
     def test_get_subtitles_data(self, mock_randrange):
         pair = mock_pair_sub('to_be_found', 'rus', 'eng')
@@ -170,12 +128,11 @@ class ViewsTestCase(TestCase):
 
         response = self.client.get(reverse('pairsubs:get_subtitles_data'))
         self.assertEqual(200, response.status_code)
-        #import ipdb; ipdb.set_trace()
 
         text = json.loads(response.content.decode('utf-8'))
         self.assertIsNotNone(text['data'])
         self.assertIsNotNone(text['data']['sub_info'])
         self.assertIsNotNone(text['data']['subs'])
-        self.assertEqual(len(text['data']['subs'][0]), 3)
+        self.assertEqual(len(text['data']['subs'][0]), 2)
 
 

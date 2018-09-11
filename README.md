@@ -12,7 +12,10 @@ git clone https://github.com/zserg/django-pairsubs.git
 
 # run docker
 sudo docker-compose up
+
+# now you can access the app at http://localhost:8080/pairsubs/
 ```
+
 ## Usage
 ![Alt text](/misc/screenshot_1.png?raw=true "Image#1")
 

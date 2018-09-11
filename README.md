@@ -14,4 +14,13 @@ git clone https://github.com/zserg/django-pairsubs.git
 sudo docker-compose up
 ```
 ## Usage
-![Alt text](/misc/screenhot_1.png?raw=true "Optional Title")
+![Alt text](/misc/screenshot_1.png?raw=true "Image#1")
+
+![Alt text](/misc/screenshot_2.png?raw=true "Image#2")
+
+![Alt text](/misc/screenshot_search.png?raw=true "Image#3")
+
+![Alt text](/misc/screenhot_list.png?raw=true "Image#4")
+
+![Alt text](/misc/screenshot_align.png?raw=true "Image#4")
+

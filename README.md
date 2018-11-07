@@ -5,7 +5,7 @@ This app allows you to use the subtitles as a two-language parallel text. You ca
 * python 3
 * SRT processing library (https://github.com/cdown/srt)
 
-### Installation
+### Quick start
 ```bash
 # clone repo
 git clone https://github.com/zserg/django-pairsubs.git

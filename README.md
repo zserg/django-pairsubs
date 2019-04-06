@@ -9,6 +9,7 @@ This app allows you to use the subtitles as a two-language parallel text. You ca
 ```bash
 # clone repo
 git clone https://github.com/zserg/django-pairsubs.git
+cd django-pairsubs
 
 # run docker
 sudo docker-compose up
